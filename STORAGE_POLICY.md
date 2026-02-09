@@ -44,3 +44,11 @@ This will:
 3. Commit with a timestamp.
 4. Push to the `main` branch.
 
+### Continuous Auto-Sync
+To keep GitHub in sync automatically (checked every 60 seconds), run:
+```powershell
+.\scripts\watch-and-sync.ps1
+```
+Keep this window open (or minimized) while you work. It will automatically add, commit, and push any changes you make.
+
+
