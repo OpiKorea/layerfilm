@@ -3,7 +3,9 @@ param(
     [string]$Prompt,
     [string]$OutputVideo,
     [int]$TotalSeconds = 7,
-    [int]$Seed = 42
+    [int]$Seed = 42,
+    [int]$Motion = 32,
+    [float]$Noise = 0.2
 )
 
 $ErrorActionPreference = "Stop"
@@ -41,7 +43,7 @@ for ($i = 1; $i -le $FullChunks; $i++) {
     # The updated script generates _raw.mp4 as an intermediate. We can use that!
     
     # 21 frames = 3 seconds @ 7fps
-    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames 21 --seed $Seed
+    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames 21 --seed $Seed --motion $Motion --noise $Noise
     
     # The python script produces:
     # 1. Output (Mastered 60fps): $ChunkOutput
@@ -73,7 +75,7 @@ if ($Remainder -gt 0) {
     
     Write-Host "🎥 Generating Remainder: ${Remainder}s (${Frames} frames)..." -ForegroundColor Yellow
     
-    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames $Frames --seed $Seed
+    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames $Frames --seed $Seed --motion $Motion --noise $Noise
     
     $RawChunk = $ChunkOutput.Replace(".mp4", "_raw.mp4")
     $GeneratedClips += $RawChunk

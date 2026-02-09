@@ -17,13 +17,13 @@ args = parser.parse_args()
 
 # Z: Drive Safety Check
 if not os.path.abspath(args.output).lower().startswith("z:\\"):
-    print(f"❌ SAFETY ERROR: All outputs must be on Z: drive. Requested: {args.output}")
+    print(f"[ERROR] All outputs must be on Z: drive. Requested: {args.output}")
     exit(1)
 
 # Model Path (Z Drive)
 model_path = "Z:/layerfilm/models/SVD/svd_xt.safetensors"
 
-print(f"🚀 Initializing SVD-XT... (Device: CUDA)")
+print(f"[INFO] Initializing SVD-XT... (Device: CUDA)")
 
 # Load Pipeline
 try:
@@ -33,9 +33,9 @@ try:
         variant="fp16"
     )
 except AttributeError:
-    print("⚠️ 'from_single_file' not found on Pipeline. Trying legacy load or standard Repo ID as fallback...")
+    print("[WARN] 'from_single_file' not found on Pipeline. Trying legacy load...")
     from diffusers.loaders import FromSingleFileMixin
-    print("🔽 Downloading/Loading from Hub to Z: cache...")
+    print("[INFO] Downloading/Loading from Hub to Z: cache...")
     pipe = StableVideoDiffusionPipeline.from_pretrained(
         "stabilityai/stable-video-diffusion-img2vid-xt",
         torch_dtype=torch.float16,
@@ -45,14 +45,14 @@ except AttributeError:
 
 pipe.enable_model_cpu_offload()
 
-print(f"🖼️ Loading and Resizing image: {args.image}")
+print(f"[INFO] Loading and Resizing image: {args.image}")
 image = load_image(args.image)
 image = image.resize((1024, 576))
 
 generator = torch.manual_seed(args.seed)
 
 # 1. Motion Generation
-print(f"🎥 Generating {args.frames} frames (ULTRA STABILITY MODE)...")
+print(f"[INFO] Generating {args.frames} frames (ULTRA STABILITY MODE)...")
 frames = pipe(
     image, 
     decode_chunk_size=2,
@@ -68,15 +68,15 @@ os.makedirs(os.path.dirname(args.output), exist_ok=True)
 # SAVE LAST FRAME FOR CHAINING
 last_frame_path = args.output.replace(".mp4", "_last.png")
 frames[-1].save(last_frame_path)
-print(f"🔗 Last frame saved for chaining: {last_frame_path}")
+print(f"[INFO] Last frame saved for chaining: {last_frame_path}")
 
 # 2. Save Raw Interim Video
 temp_output = args.output.replace(".mp4", "_raw.mp4")
-print(f"💾 Saving raw 7fps video to: {temp_output}")
+print(f"[INFO] Saving raw 7fps video to: {temp_output}")
 export_to_video(frames, temp_output, fps=7)
 
 # 3. MANDATORY 60FPS INTERPOLATION + TEMPORAL SMOOTHING + 4K
-print(f"🚀 MANDATORY STEP: Mastering (60FPS + Shimmer Killer + 4K)...")
+print(f"[INFO] MANDATORY STEP: Mastering (60FPS + Shimmer Killer + 4K)...")
 ffmpeg_path = "C:\\layerfilm\\.venv\\Lib\\site-packages\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe"
 
 # Added 'hqdn3d' (Temporal Denoiser) and 'atadenoise' to stabilize pixel shimmer
@@ -98,8 +98,8 @@ cmd = [
 
 try:
     subprocess.run(cmd, check=True)
-    print(f"✅ ULTRA-STABLE 60FPS 4K MASTER READY: {args.output}")
+    print(f"[SUCCESS] ULTRA-STABLE 60FPS 4K MASTER READY: {args.output}")
     if os.path.exists(temp_output):
         os.remove(temp_output)
 except Exception as e:
-    print(f"❌ FFMPEG Mastering Failed: {e}")
+    print(f"[ERROR] FFMPEG Mastering Failed: {e}")
