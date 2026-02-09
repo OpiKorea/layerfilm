@@ -32,3 +32,15 @@ All scripts must:
 2. Map a fast SSD/HDD to `Z:`.
 3. Create structure: `Z:\layerfilm\{models, drama-assets, renders}`.
 4. Download required models to `Z:\layerfilm\models`.
+
+## 5. GitHub Synchronization
+To automatically upload code changes to GitHub, run the following command in PowerShell:
+```powershell
+.\scripts\sync-github.ps1
+```
+This will:
+1. Check for changes in `C:\layerfilm`.
+2. Add all new files (respecting `.gitignore`).
+3. Commit with a timestamp.
+4. Push to the `main` branch.
+
