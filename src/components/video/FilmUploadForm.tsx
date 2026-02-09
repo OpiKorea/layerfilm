@@ -56,10 +56,10 @@ export function FilmUploadForm({ userId }: FilmUploadFormProps) {
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="w-full h-32 flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-3xl hover:border-violet-500/50 hover:bg-violet-500/5 transition-all group"
+                className="w-full h-32 flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-3xl hover:border-accent/50 hover:bg-accent/5 transition-all group"
             >
-                <Upload className="w-8 h-8 text-gray-500 group-hover:text-violet-400 mb-2 transition-colors" />
-                <span className="text-gray-400 font-bold group-hover:text-violet-200"><LocalizedText en="Submit New Film" ko="새 영화 제출하기" /></span>
+                <Upload className="w-8 h-8 text-gray-500 group-hover:text-accent mb-2 transition-colors" />
+                <span className="text-gray-400 font-bold group-hover:text-white"><LocalizedText en="Submit New Film" ko="새 영화 제출하기" /></span>
             </button>
         );
     }
@@ -102,7 +102,7 @@ export function FilmUploadForm({ userId }: FilmUploadFormProps) {
                                 required
                                 value={formData.title}
                                 onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-violet-500/50 outline-none transition-all text-lg"
+                                className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-accent/50 outline-none transition-all text-lg"
                                 placeholder="Film title..."
                             />
                         </div>
@@ -116,7 +116,7 @@ export function FilmUploadForm({ userId }: FilmUploadFormProps) {
                                 placeholder="https://youtube.com/..."
                                 value={formData.video_url}
                                 onChange={e => setFormData({ ...formData, video_url: e.target.value })}
-                                className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-violet-500/50 outline-none"
+                                className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-accent/50 outline-none"
                             />
                         </div>
 
@@ -129,7 +129,7 @@ export function FilmUploadForm({ userId }: FilmUploadFormProps) {
                                 required
                                 value={formData.description}
                                 onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-violet-500/50 outline-none h-40"
+                                className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-accent/50 outline-none h-40"
                                 placeholder="Tell us about your film... (TIP: Add #hashtags like #AI #Cyberpunk to help others find your work!)"
                             />
                         </div>
@@ -143,9 +143,9 @@ export function FilmUploadForm({ userId }: FilmUploadFormProps) {
                         )}
                         <button
                             disabled={isSubmitting}
-                            className="w-full h-16 md:h-20 bg-violet-600 text-white rounded-2xl md:rounded-3xl font-black text-xl hover:bg-violet-500 transition-all shadow-xl shadow-violet-500/20 disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95"
+                            className="w-full h-16 md:h-20 bg-accent text-black rounded-2xl md:rounded-3xl font-black text-xl hover:bg-accent/80 transition-all shadow-xl shadow-accent/20 disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95"
                         >
-                            {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
+                            {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin text-black" /> : <Upload className="w-6 h-6 text-black" />}
                             <LocalizedText en="Submit for Review" ko="검토 요청하기" />
                         </button>
                     </div>

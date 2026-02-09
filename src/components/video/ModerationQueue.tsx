@@ -47,7 +47,7 @@ export function ModerationQueue({ pendingIdeas: initialIdeas }: ModerationQueueP
     return (
         <div className="grid grid-cols-1 gap-6">
             <h2 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
-                <Shield className="w-5 h-5 text-violet-500" />
+                <Shield className="w-5 h-5 text-accent" />
                 <LocalizedText en="Moderation Queue" ko="검토 대기열" /> ({ideas.length})
             </h2>
             {ideas.map((idea) => (
@@ -63,7 +63,7 @@ export function ModerationQueue({ pendingIdeas: initialIdeas }: ModerationQueueP
 
                     <div className="flex-1 space-y-3">
                         <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-violet-500/20 text-violet-400 text-[10px] font-bold uppercase tracking-widest border border-violet-500/20 rounded">
+                            <span className="px-2 py-0.5 bg-accent/20 text-accent text-[10px] font-bold uppercase tracking-widest border border-accent/20 rounded">
                                 {idea.genre}
                             </span>
                             <span className="flex items-center gap-1 text-gray-500 text-[10px] font-bold uppercase tracking-widest">

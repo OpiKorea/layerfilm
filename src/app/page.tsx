@@ -1,12 +1,20 @@
 import { FilmRow } from "@/components/video/FilmRow";
-import { getIdeas } from "@/lib/data";
+import { getIdeas, hasLiked } from "@/lib/data";
 import { IdeaItem } from "@/lib/types";
 import Link from "next/link";
 import { Play, Info } from "lucide-react";
+import { HeroVideoLoop } from "@/components/video/HeroVideoLoop";
 import { LocalizedText } from "@/components/common/LocalizedText";
+import { FilmCarousel } from "@/components/video/FilmCarousel";
+import { IdeaCard } from "@/components/video/IdeaCard";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function Home() {
-    // 1. Fetch data for different rows
+    // 1. Auth & Likes context
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 2. Fetch data
     const allIdeas = await getIdeas();
 
     // Helper to calculate popularity score (Views + Likes)
@@ -21,18 +29,30 @@ export default async function Home() {
     // Filter lists
     const trendingIdeas = sortedByPopularity.slice(0, 10);
 
+    // Fetch initial likes for the user if logged in
+    const userLikes = user ? await Promise.all(
+        allIdeas.map(async (idea) => ({
+            id: idea.id,
+            liked: await hasLiked(user.id, idea.id)
+        }))
+    ) : [];
+
+    const isLiked = (id: string) => userLikes.find(l => l.id === id)?.liked || false;
+
     return (
         <div className="flex flex-col min-h-screen pb-20 bg-[#141414]">
             {/* 1. Hero Section (Most Popular) */}
             <section className="relative w-full h-[80vh] group overflow-hidden border-b border-white/5">
-                {/* Simple Dark Hero Placeholder */}
-                <div className="absolute inset-0 bg-[#0a0a0a] z-0" />
+                {/* Background Video/Image (Cloud-Native) */}
+                <div className="absolute inset-0 bg-black z-0">
+                    <HeroVideoLoop videoUrl="/drama-assets/showcase/scene_001_7s_master.mp4" thumbnailUrl="/drama-assets/showcase/base.png" />
+                </div>
 
 
                 {/* Metadata Layer */}
                 <div className="absolute bottom-[10%] left-0 w-full px-6 md:px-16 z-20 flex flex-col items-start gap-5 max-w-3xl">
                     <div className="flex flex-col gap-1">
-                        <span className="text-violet-500 font-black uppercase tracking-[0.2em] text-xs drop-shadow-md">
+                        <span className="text-accent font-black uppercase tracking-[0.2em] text-xs drop-shadow-md">
                             Featured Premiere
                         </span>
                         <h1 className="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
@@ -68,11 +88,11 @@ export default async function Home() {
             </section>
 
             {/* 2. Content Rows */}
-            <div className="relative z-20 flex flex-col gap-4">
+            <div className="relative z-20 flex flex-col gap-12 py-10">
 
-                {/* Category Exploration Row (NOW AT THE TOP) */}
-                <div className="px-6 md:px-12 py-10">
-                    <h2 className="text-xl font-bold text-white mb-6">
+                {/* Category Exploration Row */}
+                <div className="px-6 md:px-12">
+                    <h2 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase mb-6">
                         <LocalizedText en="Explore by Genre" ko="장르별 탐색" />
                     </h2>
                     <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-3">
@@ -90,7 +110,7 @@ export default async function Home() {
                             <Link
                                 key={g.key}
                                 href={`/explore?genre=${g.key}`}
-                                className="h-20 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 hover:border-violet-500/30 transition-all group px-2"
+                                className="h-20 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 hover:border-accent/30 transition-all group px-2"
                             >
                                 <span className="text-[10px] md:text-xs text-gray-400 font-black tracking-tighter uppercase group-hover:text-white text-center leading-tight">
                                     <LocalizedText en={g.en} ko={g.ko} />
@@ -100,29 +120,41 @@ export default async function Home() {
                     </div>
                 </div>
 
-                <FilmRow title={<LocalizedText en="Trending Now" ko="지금 뜨는 콘텐츠" />} ideas={trendingIdeas} />
-                <FilmRow title={<LocalizedText en="New Releases" ko="최신 등록 콘텐츠" />} ideas={allIdeas.slice(0, 10)} />
+                <FilmCarousel title={<LocalizedText en="Trending Now" ko="지금 뜨는 콘텐츠" />}>
+                    {trendingIdeas.map((idea) => (
+                        <div key={idea.id} className="min-w-[280px] md:min-w-[350px] snap-start">
+                            <IdeaCard idea={idea} currentUserId={user?.id} hasLikedInitial={isLiked(idea.id)} />
+                        </div>
+                    ))}
+                </FilmCarousel>
 
-                {/* Genre Rows in Specific Order */}
+                <FilmCarousel title={<LocalizedText en="New Releases" ko="최신 등록 콘텐츠" />}>
+                    {allIdeas.slice(0, 10).map((idea) => (
+                        <div key={idea.id} className="min-w-[280px] md:min-w-[350px] snap-start">
+                            <IdeaCard idea={idea} currentUserId={user?.id} hasLikedInitial={isLiked(idea.id)} />
+                        </div>
+                    ))}
+                </FilmCarousel>
+
+                {/* Genre Rows */}
                 {[
                     { key: 'Sci-Fi', en: 'Sci-Fi Dimensions', ko: 'SF 디멘션' },
                     { key: 'Horror', en: 'Adrenaline Horror', ko: '아드레날린 호러' },
-                    { key: 'Drama', en: 'Critically Acclaimed', ko: '비평가 추천 명작' },
-                    { key: 'Documentary', en: 'Documentary', ko: '다큐멘터리' },
-                    { key: 'Experimental', en: 'Experimental', ko: '실험 영화' },
-                    { key: 'Animation', en: 'Animation', ko: '애니메이션' },
-                    { key: 'Music Video', en: 'Music Video', ko: '뮤직 비디오' },
-                    { key: 'Comedy', en: 'Comedy', ko: '코미디' },
-                    { key: 'Shorts', en: 'Shorts', ko: '단편 영화' }
+                    { key: 'Drama', en: 'Critically Acclaimed', ko: '비평가 추천 명작' }
                 ].map(genre => {
                     const genreIdeas = sortedByPopularity.filter(i => i.genre === genre.key);
                     if (genreIdeas.length === 0) return null;
                     return (
-                        <FilmRow
+                        <FilmCarousel
                             key={genre.key}
                             title={<LocalizedText en={genre.en} ko={genre.ko} />}
-                            ideas={genreIdeas}
-                        />
+                        >
+                            {genreIdeas.map((idea) => (
+                                <div key={idea.id} className="min-w-[280px] md:min-w-[350px] snap-start">
+                                    <IdeaCard idea={idea} currentUserId={user?.id} hasLikedInitial={isLiked(idea.id)} />
+                                </div>
+                            ))}
+                        </FilmCarousel>
                     );
                 })}
             </div>

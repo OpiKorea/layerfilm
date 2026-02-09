@@ -13,6 +13,7 @@ export function mapRowToIdea(row: any): IdeaItem {
         genre: s.genre || meta.genre || 'Sci-Fi',
         runtime: s.runtime || meta.runtime || '00:00',
         ai_tool: s.ai_tool || meta.ai_tool || 'Unknown',
+        mood: s.mood || meta.mood || 'Neutral',
         privateContent: s.private_content || meta.private_content,
         videoUrl: s.video_url || s.preview_url || s.private_content || meta.video_url || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         thumbnailUrl: s.thumbnail_url || s.preview_url || meta.thumbnail_url || '',

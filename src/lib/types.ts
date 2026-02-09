@@ -9,6 +9,7 @@ export interface IdeaItem {
     genre: string;
     runtime: string;
     ai_tool: string;
+    mood?: string;
     thumbnailUrl?: string;
     videoUrl?: string;
     title_ko?: string;
@@ -52,9 +53,9 @@ export interface DatabaseIdea {
     type: ContentType;
     genre?: string;
     runtime?: string;
-    ai_tool?: string;
-    thumbnail_url?: string;
     video_url?: string;
+    ai_tool?: string;
+    mood?: string;
     title_ko?: string;
     description_ko?: string;
     status: 'pending' | 'approved' | 'rejected' | 'reported';

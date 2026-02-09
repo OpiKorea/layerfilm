@@ -9,7 +9,9 @@ create table public.ideas (
   author_name text,
   author_avatar text,
   views_count integer default 0,
-  likes_count integer default 0
+  likes_count integer default 0,
+  ai_tool text,
+  mood text
 );
 
 -- RLS

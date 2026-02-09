@@ -42,7 +42,7 @@ export default async function MyListPage() {
                 ) : (
                     <div className="h-[50vh] flex flex-col items-center justify-center bg-white/5 rounded-2xl border border-white/5 border-dashed">
                         <p className="text-gray-400 text-lg mb-6">Your list is empty.</p>
-                        <Link href="/" className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-full transition-colors text-lg">
+                        <Link href="/" className="px-8 py-3 bg-accent hover:bg-accent/80 text-black font-bold rounded-full transition-colors text-lg shadow-lg shadow-accent/20">
                             Go Home
                         </Link>
                     </div>

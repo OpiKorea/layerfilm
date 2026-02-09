@@ -97,12 +97,12 @@ export function VideoPlayer({ src, poster }: VideoPlayerProps) {
         clearTimeout(controlsTimeout);
         controlsTimeout = setTimeout(() => {
             if (isPlaying) setShowControls(false);
-        }, 3000);
+        }, 2000);
     };
 
     return (
         <div
-            className="relative w-full aspect-video bg-black group rounded-xl overflow-hidden shadow-2xl border border-white/10"
+            className="relative w-full aspect-video bg-black group rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5"
             onMouseMove={handleMouseMove}
             onMouseLeave={() => isPlaying && setShowControls(false)}
         >
@@ -110,54 +110,71 @@ export function VideoPlayer({ src, poster }: VideoPlayerProps) {
                 ref={videoRef}
                 src={getMediaUrl(src)}
                 poster={poster}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 onTimeUpdate={handleTimeUpdate}
                 onClick={togglePlay}
+                playsInline
             />
 
-            {/* Play Overlay (Big Button) */}
-            {!isPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity">
-                    <button
-                        onClick={togglePlay}
-                        className="w-20 h-20 rounded-full bg-violet-600/90 flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg shadow-violet-500/50"
-                    >
-                        <Play className="w-8 h-8 fill-current ml-1" />
+            {/* Premium Gradient Overlays */}
+            <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none transition-opacity duration-500 ${showControls ? 'opacity-100' : 'opacity-0'}`} />
+
+            {/* Center Play/Pause Transition */}
+            <div
+                className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-300 ${isPlaying ? 'scale-110 opacity-0' : 'scale-100 opacity-100'}`}
+            >
+                <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl">
+                    <Play className="w-10 h-10 text-white fill-current ml-1" />
+                </div>
+            </div>
+
+            {/* Top Bar (Title/Close would go here) */}
+            <div className={`absolute top-0 left-0 right-0 p-8 transition-transform duration-500 ${showControls ? 'translate-y-0' : '-translate-y-full'}`}>
+                <div className="flex justify-end gap-4">
+                    <button onClick={toggleMute} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all">
+                        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                    </button>
+                    <button onClick={toggleFullscreen} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all">
+                        {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
                     </button>
                 </div>
-            )}
+            </div>
 
-            {/* Custom Controls Bar */}
-            <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="flex flex-col gap-2">
-                    {/* Progress Bar */}
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={progress}
-                        onChange={handleSeek}
-                        className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:rounded-full hover:[&::-webkit-slider-thumb]:scale-125 transition-all"
-                    />
+            {/* Bottom Controls (Netflix Style) */}
+            <div className={`absolute bottom-0 left-0 right-0 p-8 pt-20 transition-transform duration-500 ${showControls ? 'translate-y-0' : 'translate-y-full'}`}>
+                <div className="space-y-6">
+                    {/* Premium Progress Bar */}
+                    <div className="relative group/progress h-2 cursor-pointer transition-all hover:h-3">
+                        <div className="absolute inset-0 bg-white/20 rounded-full" />
+                        <div
+                            className="absolute inset-y-0 left-0 bg-accent rounded-full transition-all duration-100"
+                            style={{ width: `${progress}%` }}
+                        />
+                        <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={progress}
+                            onChange={handleSeek}
+                            className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                        />
+                    </div>
 
-                    <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-4">
-                            <button onClick={togglePlay} className="text-white hover:text-violet-400 transition-colors">
-                                {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current" />}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-6">
+                            <button
+                                onClick={togglePlay}
+                                className="text-white hover:scale-110 transition-transform active:scale-95"
+                            >
+                                {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current" />}
                             </button>
 
-                            <div className="flex items-center gap-2 group/volume">
-                                <button onClick={toggleMute} className="text-white hover:text-gray-300">
-                                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                                </button>
+                            <div className="text-white/60 text-sm font-black tracking-widest uppercase italic">
+                                LayerFilm <span className="text-accent ml-2">Direct</span>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
-                            <button onClick={toggleFullscreen} className="text-white hover:text-gray-300">
-                                {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-                            </button>
-                        </div>
+                        {/* Additional status icons/quality can go here */}
                     </div>
                 </div>
             </div>

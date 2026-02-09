@@ -97,12 +97,94 @@ export async function createIdea(ideaData: {
 
 export async function getUserSubmissions(userId: string): Promise<IdeaItem[]> {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('ideas').select('*, author:author_id(username, avatar_url, role)').eq('author_id', userId).order('created_at', { ascending: false });
+    const { data: rows, error } = await supabase
+        .from('ideas')
+        .select(`
+            *,
+            author:profiles!ideas_author_id_fkey(*)
+        `)
+        .eq('author_id', userId)
+        .order('created_at', { ascending: false });
+
     if (error) {
         console.error("[Data] getUserSubmissions failed:", error.message);
         return [];
     }
-    return (data || []).map(mapRowToIdea);
+    return (rows || []).map(mapRowToIdea);
+}
+
+export async function getProfile(userId: string) {
+    const supabase = await createClient();
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+    return profile;
+}
+
+export async function getFollowerCount(userId: string): Promise<number> {
+    const supabase = await createClient();
+    const { count } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('following_id', userId);
+
+    return count || 0;
+}
+
+export async function isFollowing(followerId: string, followingId: string): Promise<boolean> {
+    const supabase = await createClient();
+    const { data } = await supabase
+        .from('follows')
+        .select('id')
+        .eq('follower_id', followerId)
+        .eq('following_id', followingId)
+        .single();
+
+    return !!data;
+}
+
+export async function getLikeCount(ideaId: string): Promise<number> {
+    const supabase = await createClient();
+    const { count } = await supabase
+        .from('likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('idea_id', ideaId);
+
+    return count || 0;
+}
+
+export async function hasLiked(userId: string, ideaId: string): Promise<boolean> {
+    const supabase = await createClient();
+    const { data } = await supabase
+        .from('likes')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('idea_id', ideaId)
+        .single();
+
+    return !!data;
+}
+
+export async function getIdeasByAuthor(authorId: string): Promise<IdeaItem[]> {
+    const supabase = await createClient();
+    const { data: rows, error } = await supabase
+        .from('ideas')
+        .select(`
+            *,
+            author:profiles!ideas_author_id_fkey(*)
+        `)
+        .eq('author_id', authorId)
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("[Data] getIdeasByAuthor failed:", error.message);
+        return [];
+    }
+    return (rows || []).map(mapRowToIdea);
 }
 
 export async function getIdeas(
@@ -110,6 +192,8 @@ export async function getIdeas(
     genre?: string,
     role?: string,
     type?: ContentType,
+    mood?: string,
+    aiTool?: string,
     includePending = false,
     sortBy: 'latest' | 'trending' = 'latest'
 ): Promise<IdeaItem[]> {
@@ -126,6 +210,8 @@ export async function getIdeas(
         if (role) dbQuery = dbQuery.eq('author.role', role);
         if (type) dbQuery = dbQuery.eq('type', type);
         if (genre && genre !== 'All') dbQuery = dbQuery.ilike('genre', `%${genre}%`);
+        if (mood && mood !== 'All') dbQuery = dbQuery.ilike('mood', `%${mood}%`);
+        if (aiTool && aiTool !== 'All') dbQuery = dbQuery.ilike('ai_tool', `%${aiTool}%`);
         if (query) dbQuery = dbQuery.ilike('title', `%${query}%`);
 
         if (sortBy === 'trending') {
@@ -165,6 +251,16 @@ export async function getIdeas(
         if (query) {
             const q = query.toLowerCase();
             filtered = filtered.filter(i => i.title.toLowerCase().includes(q) || i.description.toLowerCase().includes(q));
+        }
+
+        if (mood && mood !== 'All') {
+            const m = mood.toLowerCase();
+            filtered = filtered.filter(i => i.mood?.toLowerCase().includes(m));
+        }
+
+        if (aiTool && aiTool !== 'All') {
+            const a = aiTool.toLowerCase();
+            filtered = filtered.filter(i => i.ai_tool.toLowerCase().includes(a));
         }
 
         return filtered;

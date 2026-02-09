@@ -7,6 +7,7 @@ import { Menu, X, Home, Film, Tv, Sparkles, Heart, UserCircle, Wallet, Shield, L
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { signOut } from "@/app/actions/auth";
 import { LocalizedText } from "../common/LocalizedText";
+import { BrandLogo } from "../common/BrandLogo";
 
 interface MobileMenuProps {
     user?: any;
@@ -51,9 +52,7 @@ export function MobileMenu({ user, profile }: MobileMenuProps) {
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="h-20 flex items-center justify-between px-6 border-b border-white/5">
-                        <span className="font-black text-lg tracking-widest text-white">
-                            <LocalizedText en="MENU" ko="메뉴" />
-                        </span>
+                        <BrandLogo showText={false} size={30} />
                         <button onClick={toggle} className="text-gray-400 hover:text-white p-2">
                             <X className="w-6 h-6" />
                         </button>
@@ -121,9 +120,10 @@ export function MobileMenu({ user, profile }: MobileMenuProps) {
                     </nav>
 
                     {/* Footer / Extra */}
-                    <div className="p-6 border-t border-white/5">
-                        <div className="text-xs text-gray-500 text-center">
-                            © 2026 LayerFilm
+                    <div className="p-6 border-t border-white/5 space-y-4">
+                        <BrandLogo showText={true} className="scale-75 origin-left" />
+                        <div className="text-[10px] font-black uppercase tracking-widest text-gray-600">
+                            © 2026 LayerFilm Global
                         </div>
                     </div>
                 </div>

@@ -62,8 +62,8 @@ export function ChangePasswordModal() {
 
                 <div className="space-y-8">
                     <div className="text-center">
-                        <div className="w-20 h-20 bg-violet-600/20 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-violet-500/20">
-                            <Lock className="w-10 h-10 text-violet-400" />
+                        <div className="w-20 h-20 bg-accent/20 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-accent/20">
+                            <Lock className="w-10 h-10 text-accent" />
                         </div>
                         <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">
                             <LocalizedText en="Change Password" ko="비밀번호 변경" />
@@ -90,7 +90,7 @@ export function ChangePasswordModal() {
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-violet-500/50 outline-none transition-all font-bold placeholder:text-gray-700"
+                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-accent/50 outline-none transition-all font-bold placeholder:text-gray-700"
                                         placeholder="Min 8 chars, 1 num, 1 spec"
                                     />
                                 </div>
@@ -105,7 +105,7 @@ export function ChangePasswordModal() {
                                         type="password"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-violet-500/50 outline-none transition-all font-bold placeholder:text-gray-700"
+                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-accent/50 outline-none transition-all font-bold placeholder:text-gray-700"
                                         placeholder="Confirm new password"
                                     />
                                 </div>
@@ -120,7 +120,7 @@ export function ChangePasswordModal() {
 
                             <button
                                 disabled={!canSubmit}
-                                className="w-full h-16 bg-violet-600 hover:bg-violet-500 text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-violet-500/20 disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95 grayscale-0 disabled:grayscale"
+                                className="w-full h-16 bg-accent hover:bg-accent/80 text-black rounded-2xl font-black text-lg transition-all shadow-xl shadow-accent/20 disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95 grayscale-0 disabled:grayscale"
                             >
                                 {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : "UPDATE PASSWORD"}
                             </button>

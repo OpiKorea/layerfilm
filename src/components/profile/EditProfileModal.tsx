@@ -60,8 +60,8 @@ export function EditProfileModal({ profile, userId }: EditProfileModalProps) {
 
                 <div className="space-y-8">
                     <div className="text-center">
-                        <div className="w-20 s-20 h-20 bg-violet-600/20 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-violet-500/20">
-                            <User className="w-10 h-10 text-violet-400" />
+                        <div className="w-20 h-20 bg-accent/20 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-accent/20">
+                            <User className="w-10 h-10 text-accent" />
                         </div>
                         <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">
                             <LocalizedText en="Edit Profile" ko="프로필 수정" />
@@ -86,7 +86,7 @@ export function EditProfileModal({ profile, userId }: EditProfileModalProps) {
                                         type="text"
                                         value={formData.username}
                                         onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-violet-500/50 outline-none transition-all font-bold"
+                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-accent/50 outline-none transition-all font-bold"
                                         placeholder="Enter your nickname"
                                     />
                                 </div>
@@ -100,7 +100,7 @@ export function EditProfileModal({ profile, userId }: EditProfileModalProps) {
                                         type="url"
                                         value={formData.avatar_url}
                                         onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
-                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-violet-500/50 outline-none transition-all font-bold"
+                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-accent/50 outline-none transition-all font-bold"
                                         placeholder="https://..."
                                     />
                                 </div>
@@ -109,7 +109,7 @@ export function EditProfileModal({ profile, userId }: EditProfileModalProps) {
 
                             <button
                                 disabled={isSubmitting}
-                                className="w-full h-16 bg-violet-600 hover:bg-violet-500 text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-violet-500/20 disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
+                                className="w-full h-16 bg-accent hover:bg-accent/80 text-black rounded-2xl font-black text-lg transition-all shadow-xl shadow-accent/20 disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
                             >
                                 {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Settings className="w-5 h-5" />}
                                 SAVE CHANGES

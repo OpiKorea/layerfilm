@@ -8,10 +8,12 @@ interface IdeaGridProps {
     query?: string;
     genre?: string;
     role?: string;
+    mood?: string;
+    aiTool?: string;
 }
 
-export async function IdeaGrid({ query, genre, role }: IdeaGridProps) {
-    const ideas = await getIdeas(query, genre, role);
+export async function IdeaGrid({ query, genre, role, mood, aiTool }: IdeaGridProps) {
+    const ideas = await getIdeas(query, genre, role, undefined, mood, aiTool);
 
     if (ideas.length === 0) {
         return (
@@ -28,7 +30,7 @@ export async function IdeaGrid({ query, genre, role }: IdeaGridProps) {
                 {(query || genre || role) && (
                     <Link
                         href="/explore"
-                        className="flex items-center gap-2 px-6 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-full font-bold transition-all"
+                        className="flex items-center gap-2 px-6 py-2 bg-accent hover:bg-accent/80 text-black rounded-full font-bold transition-all shadow-lg shadow-accent/20"
                     >
                         <RotateCcw className="w-4 h-4" />
                         <LocalizedText en="Clear All Filters" ko="필터 초기화" />

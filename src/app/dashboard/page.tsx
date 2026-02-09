@@ -34,7 +34,7 @@ export default async function DashboardPage() {
     // Fetch Moderation Queue if Admin
     let pendingIdeas: IdeaItem[] = [];
     if (profile?.role === 'admin') {
-        pendingIdeas = await getIdeas(undefined, undefined, undefined, undefined, true);
+        pendingIdeas = await getIdeas(undefined, undefined, undefined, undefined, undefined, undefined, true);
     }
 
     return (
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
 
                 {/* 1. Profile Header */}
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-8 border-b border-white/5 pb-12">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-violet-500/20 shadow-2xl">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-accent/20 shadow-2xl shadow-accent/10">
                         {profile?.avatar_url ? (
                             <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
                         <div>
                             <h1 className="text-3xl md:text-4xl font-black tracking-tight">{profile?.username || user.email}</h1>
                             <p className="text-gray-400 text-lg">{user.email}</p>
-                            <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-bold uppercase tracking-widest">
+                            <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold uppercase tracking-widest">
                                 {profile?.role || 'Viewer'}
                             </div>
                         </div>
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
                             {profile?.role === 'admin' && (
                                 <a
                                     href="/dashboard/moderation"
-                                    className="flex items-center gap-2 px-6 py-2 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 text-violet-400 rounded-full transition-colors font-bold text-sm"
+                                    className="flex items-center gap-2 px-6 py-2 bg-accent/10 hover:bg-accent/20 border border-accent/20 text-accent rounded-full transition-colors font-bold text-sm"
                                 >
                                     <Shield className="w-4 h-4" />
                                     <LocalizedText en="Moderation" ko="관리대기" />
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
 
                 <div>
                     <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                        <UserCircle className="w-6 h-6 text-violet-500" />
+                        <UserCircle className="w-6 h-6 text-accent" />
                         <LocalizedText en="My Submissions" ko="내 제출 목록" />
                     </h2>
                     <MySubmissions ideas={userSubmissions} />
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                 {/* 3. Film Submission Section */}
                 <div className="space-y-6">
                     <h2 className="text-2xl font-bold flex items-center gap-3">
-                        <Upload className="w-6 h-6 text-violet-500" />
+                        <Upload className="w-6 h-6 text-accent" />
                         Film Submission
                     </h2>
                     <FilmUploadForm userId={user.id} />

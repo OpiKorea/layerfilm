@@ -65,10 +65,10 @@ export function SearchInput({ placeholder }: { placeholder: string }) {
                     onChange={(e) => setQuery(e.target.value)}
                     onFocus={() => query.length >= 2 && setIsOpen(true)}
                     placeholder={placeholder}
-                    className="w-full h-12 bg-white/5 border border-white/10 rounded-2xl px-14 text-white placeholder:text-gray-400 text-base focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-1 focus:ring-violet-500/50 transition-all shadow-inner"
+                    className="w-full h-12 bg-white/5 border border-white/10 rounded-2xl px-14 text-white placeholder:text-gray-400 text-base focus:outline-none focus:border-accent-500/50 focus:bg-white/10 focus:ring-1 focus:ring-accent-500/50 transition-all shadow-inner"
                 />
-                <Search className="absolute left-5 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-violet-400 transition-colors" />
-                {isLoading && <Loader2 className="absolute right-5 top-3.5 w-5 h-5 text-violet-500 animate-spin" />}
+                <Search className="absolute left-5 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-accent-400 transition-colors" />
+                {isLoading && <Loader2 className="absolute right-5 top-3.5 w-5 h-5 text-accent-500 animate-spin" />}
             </form>
 
             {/* Suggestions Dropdown */}

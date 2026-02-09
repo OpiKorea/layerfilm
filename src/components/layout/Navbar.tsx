@@ -12,6 +12,7 @@ import { translations, Language } from "@/lib/i18n";
 
 import { MobileSearch } from "./MobileSearch";
 import { SearchInput } from "./SearchInput";
+import { BrandLogo } from "../common/BrandLogo";
 
 export async function Navbar() {
     const supabase = await createClient();
@@ -33,14 +34,7 @@ export async function Navbar() {
             <div className="h-20 flex items-center justify-between px-6 md:px-12 gap-8">
                 {/* 1. Left: Logo & Brand */}
                 <div className="flex items-center gap-6 min-w-fit">
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                            <span className="text-white font-black text-xl">L</span>
-                        </div>
-                        <span className="text-2xl font-black tracking-tighter text-white group-hover:text-violet-400 transition-colors">
-                            LAYER<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">FILM</span>
-                        </span>
-                    </Link>
+                    <BrandLogo />
                 </div>
 
                 {/* 2. Center: Search Bar (Wider & Taller) */}
@@ -62,19 +56,19 @@ export async function Navbar() {
                             {/* Notifications */}
                             <button className="text-gray-400 hover:text-white transition-colors relative mr-2">
                                 <Bell className="w-6 h-6" />
-                                <div className="absolute top-0 right-0 w-2 h-2 bg-violet-500 rounded-full border border-black" />
+                                <div className="absolute top-0 right-0 w-2 h-2 bg-accent rounded-full border border-black" />
                             </button>
 
                             {/* User Profile Link (Nickname + Avatar) */}
-                            <Link href="/dashboard" className="flex items-center gap-3 pl-4 pr-1.5 py-1.5 bg-white/5 hover:bg-violet-500/10 rounded-full border border-white/10 hover:border-violet-500/30 transition-all group">
-                                <span className="text-sm font-black text-gray-300 group-hover:text-white transition-colors">
-                                    {profile?.username || (lang === 'ko' ? '사용자' : 'User')}
+                            <Link href="/dashboard" className="flex items-center gap-3 pl-4 pr-1.5 py-1.5 bg-white/5 hover:bg-accent/10 rounded-full border border-white/10 hover:border-accent/30 transition-all group">
+                                <span className="text-2xl font-black tracking-tighter text-white group-hover:text-accent transition-colors">
+                                    LAYER<span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-purple">FILM</span>
                                 </span>
-                                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-violet-500 transition-colors shadow-lg">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent-purple flex items-center justify-center shadow-lg shadow-accent/20 group-hover:scale-105 transition-transform">
                                     {profile?.avatar_url ? (
-                                        <img src={profile.avatar_url} alt="User" className="w-full h-full object-cover" />
+                                        <img src={profile.avatar_url} alt="User" className="w-full h-full object-cover rounded-xl" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-violet-600 to-indigo-600 text-white font-black text-[10px] uppercase">
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-accent to-accent-purple text-white font-black text-[10px] uppercase rounded-xl">
                                             {profile?.username?.[0] || 'U'}
                                         </div>
                                     )}

@@ -70,7 +70,7 @@ export function DetailHero({ idea, user, averageRating }: DetailHeroProps) {
         <div className="relative w-full h-[85vh] group">
             {/* Dynamic Background Layer */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-900/30 via-[#0a0a0a] to-[#0a0a0a] z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-accent-purple/20 via-[#0a0a0a] to-[#0a0a0a] z-0" />
                 {idea.thumbnailUrl && (
                     <img
                         src={idea.thumbnailUrl}
@@ -92,7 +92,7 @@ export function DetailHero({ idea, user, averageRating }: DetailHeroProps) {
                     <Link href="/explore" className="text-gray-400 hover:text-white transition-colors text-sm font-bold tracking-widest uppercase flex items-center gap-1">
                         Library <ChevronRight className="w-3 h-3" />
                     </Link>
-                    <span className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-widest text-violet-200 border border-white/10">
+                    <span className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-widest text-accent border border-white/10">
                         {idea.genre || 'Sci-Fi'}
                     </span>
                 </div>
@@ -105,14 +105,14 @@ export function DetailHero({ idea, user, averageRating }: DetailHeroProps) {
                 {/* Stats Row */}
                 <div className="flex items-center gap-6 text-sm md:text-lg font-medium text-gray-300">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 p-0.5">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent-purple p-0.5">
                             <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
                                 {idea.author.avatar ? <img src={idea.author.avatar} alt="Author" className="w-full h-full object-cover" /> : <span className="text-xs font-bold">AI</span>}
                             </div>
                         </div>
                         <span className="text-white font-bold">{idea.author.name}</span>
                     </div>
-                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-violet-500 rounded-full" /> {idea.runtime || '02:30'}</span>
+                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-accent rounded-full" /> {idea.runtime || '02:30'}</span>
                     <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-gray-600 rounded-full" /> 2026</span>
                     <div className="flex items-center gap-1 text-yellow-400">
                         <Star className="w-5 h-5 fill-yellow-400" />
@@ -132,9 +132,9 @@ export function DetailHero({ idea, user, averageRating }: DetailHeroProps) {
                         <div className="flex flex-wrap items-center gap-4">
                             <button
                                 onClick={() => handlePlay(false)}
-                                className="bg-violet-600 text-white h-14 px-10 rounded-full font-bold text-lg flex items-center gap-3 hover:bg-violet-500 transition-all shadow-[0_0_40px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.6)]"
+                                className="bg-accent text-black h-14 px-10 rounded-full font-bold text-lg flex items-center gap-3 hover:bg-accent/80 transition-all shadow-[0_0_40px_rgba(0,245,255,0.4)] hover:shadow-[0_0_60px_rgba(0,245,255,0.6)]"
                             >
-                                <Play className="w-6 h-6 fill-white" />
+                                <Play className="w-6 h-6 fill-black" />
                                 <LocalizedText en="Play Now" ko="지금 재생" />
                             </button>
 

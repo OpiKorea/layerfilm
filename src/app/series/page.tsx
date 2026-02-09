@@ -30,7 +30,7 @@ export default async function SeriesPage() {
 
                 <div className="absolute bottom-[20%] left-0 w-full px-6 md:px-16 z-20 flex flex-col items-start gap-5 max-w-3xl">
                     <div className="flex flex-col gap-1">
-                        <span className="text-violet-500 font-black uppercase tracking-[0.2em] text-sm drop-shadow-md">
+                        <span className="text-accent font-black uppercase tracking-[0.2em] text-sm drop-shadow-md">
                             LAYERFILM SERIES
                         </span>
                         <h1 className="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">

@@ -28,7 +28,7 @@ export function MySubmissions({ ideas: initialIdeas }: MySubmissionsProps) {
         return (
             <div className="h-48 flex flex-col items-center justify-center bg-white/5 rounded-3xl border border-white/5 border-dashed">
                 <p className="text-gray-400 mb-4 font-bold"><LocalizedText en="You haven't submitted any films yet." ko="아직 제출한 영상이 없습니다." /></p>
-                <Link href="/" className="px-6 py-2 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-full transition-all text-sm uppercase tracking-widest">
+                <Link href="/" className="px-6 py-2 bg-accent hover:bg-accent/80 text-black font-bold rounded-full transition-all text-sm uppercase tracking-widest shadow-lg shadow-accent/20">
                     <LocalizedText en="Browse Films" ko="영상 둘러보기" />
                 </Link>
             </div>
@@ -38,7 +38,7 @@ export function MySubmissions({ ideas: initialIdeas }: MySubmissionsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {ideas.map((idea) => (
-                <div key={idea.id} className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden group hover:border-violet-500/30 transition-all">
+                <div key={idea.id} className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden group hover:border-accent/30 transition-all">
                     {/* Thumbnail View */}
                     <div className="aspect-video relative overflow-hidden">
                         <img
@@ -87,7 +87,7 @@ export function MySubmissions({ ideas: initialIdeas }: MySubmissionsProps) {
 
                     {/* Info */}
                     <div className="p-6 space-y-2">
-                        <h3 className="font-bold text-white text-lg truncate group-hover:text-violet-400 transition-colors uppercase tracking-tight">
+                        <h3 className="font-bold text-white text-lg truncate group-hover:text-accent transition-colors uppercase tracking-tight">
                             {idea.title}
                         </h3>
                         <p className="text-gray-500 text-xs font-mono">

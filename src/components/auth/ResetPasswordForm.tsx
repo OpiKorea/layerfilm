@@ -17,11 +17,11 @@ export function ResetPasswordForm({ message, error }: { message?: string, error?
 
     return (
         <div className="w-full max-w-md bg-[#111] border border-white/10 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-violet-500 to-transparent" />
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-accent to-transparent" />
 
             <div className="flex flex-col items-center mb-10">
-                <div className="w-16 h-16 bg-violet-600/20 rounded-2xl flex items-center justify-center mb-6 border border-violet-500/20">
-                    <Lock className="w-8 h-8 text-violet-400" />
+                <div className="w-16 h-16 bg-accent/20 rounded-2xl flex items-center justify-center mb-6 border border-accent/20">
+                    <Lock className="w-8 h-8 text-accent" />
                 </div>
                 <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Set New Password</h1>
                 <p className="text-gray-500 text-sm mt-2 font-medium">Please enter your new secure password below.</p>
@@ -33,7 +33,7 @@ export function ResetPasswordForm({ message, error }: { message?: string, error?
                     <label className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1" htmlFor="password">New Password</label>
                     <div className="relative">
                         <input
-                            className={`w-full bg-black/40 border ${password && !isPasswordValid ? 'border-red-500/50' : 'border-white/5'} rounded-2xl p-4 pl-12 text-white focus:border-violet-500/50 focus:outline-none transition-all placeholder:text-gray-700`}
+                            className={`w-full bg-black/40 border ${password && !isPasswordValid ? 'border-red-500/50' : 'border-white/5'} rounded-2xl p-4 pl-12 text-white focus:border-accent/50 focus:outline-none transition-all placeholder:text-gray-700`}
                             id="password"
                             name="password"
                             type="password"
@@ -51,7 +51,7 @@ export function ResetPasswordForm({ message, error }: { message?: string, error?
                     <label className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1" htmlFor="confirmPassword">Confirm Password</label>
                     <div className="relative">
                         <input
-                            className={`w-full bg-black/40 border ${confirmPassword && !doPasswordsMatch ? 'border-red-500/50' : 'border-white/5'} rounded-2xl p-4 pl-12 text-white focus:border-violet-500/50 focus:outline-none transition-all placeholder:text-gray-700`}
+                            className={`w-full bg-black/40 border ${confirmPassword && !doPasswordsMatch ? 'border-red-500/50' : 'border-white/5'} rounded-2xl p-4 pl-12 text-white focus:border-accent/50 focus:outline-none transition-all placeholder:text-gray-700`}
                             id="confirmPassword"
                             name="confirmPassword"
                             type="password"
@@ -83,7 +83,7 @@ export function ResetPasswordForm({ message, error }: { message?: string, error?
                 <button
                     type="submit"
                     disabled={!canSubmit}
-                    className="h-16 bg-violet-600 hover:bg-violet-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-violet-500/20 disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3 tracking-[0.2em] uppercase text-sm active:scale-95"
+                    className="h-16 bg-accent hover:bg-accent/80 text-black font-black rounded-2xl transition-all shadow-xl shadow-accent/20 disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3 tracking-[0.2em] uppercase text-sm active:scale-95"
                 >
                     {isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : "Update Password"}
                 </button>

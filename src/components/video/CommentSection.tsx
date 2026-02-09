@@ -85,11 +85,11 @@ export function CommentSection({ ideaId, currentUser, ideaAuthorId }: CommentSec
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="Share your thoughts with the creator..."
-                            className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 min-h-[120px] transition-all"
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-accent/50 min-h-[120px] transition-all"
                         />
                         <button
                             disabled={isSubmitting || !newComment.trim()}
-                            className="absolute bottom-4 right-4 bg-violet-600 text-white p-3 rounded-full hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/20"
+                            className="absolute bottom-4 right-4 bg-accent text-black p-3 rounded-full hover:bg-accent/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-accent/20"
                         >
                             <Send className="w-5 h-5" />
                         </button>
@@ -98,7 +98,7 @@ export function CommentSection({ ideaId, currentUser, ideaAuthorId }: CommentSec
             ) : (
                 <div className="bg-white/5 p-8 rounded-3xl border border-white/5 text-center">
                     <p className="text-gray-400 font-medium mb-4"><LocalizedText en="Sign in to join the conversation" ko="대화에 참여하려면 로그인해 주세요" /></p>
-                    <a href="/login" className="text-violet-400 font-bold hover:underline"><LocalizedText en="Log In" ko="로그인" /></a>
+                    <a href="/login" className="text-accent font-bold hover:underline"><LocalizedText en="Log In" ko="로그인" /></a>
                 </div>
             )}
 

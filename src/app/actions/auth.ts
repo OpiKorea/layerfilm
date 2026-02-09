@@ -347,15 +347,49 @@ export async function changePassword(password: string) {
 }
 
 export async function deleteAccount() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false, error: "Not authenticated" };
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { success: false, error: "Not authenticated" };
 
-    // Delete profile (Cascade will handle some things if set up, or we do manually)
-    const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
-    if (profileError) return { success: false, error: profileError.message };
+        console.log(`Starting permanent deletion for user: ${user.id}`);
+        const supabaseAdmin = await createAdminClient();
 
-    // Sign out
-    await supabase.auth.signOut();
-    return redirect("/?message=Account deleted successfully");
+        // 1. Delete user's comments
+        console.log('Purging user comments...');
+        await supabaseAdmin.from('comments').delete().eq('user_id', user.id);
+
+        // 2. Delete user's favorites
+        console.log('Purging user favorites...');
+        await supabaseAdmin.from('favorites').delete().eq('user_id', user.id);
+
+        // 3. Delete user's films (ideas)
+        // Since comments table has ON DELETE CASCADE on idea_id, 
+        // deleting user's films will also clean up associated comments.
+        console.log('Purging user films/ideas...');
+        const { error: ideaError } = await supabaseAdmin.from('ideas').delete().eq('author_id', user.id);
+        if (ideaError) {
+            console.error("Error purging ideas:", ideaError.message);
+        }
+
+        // 4. Delete the Auth User
+        // This will cascade delete the 'profiles' row due to foreign key constraint
+        console.log('Deleting auth user via Admin client...');
+        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+
+        if (authError) {
+            console.error("Auth user deletion failed:", authError.message);
+            return { success: false, error: authError.message };
+        }
+
+        // 5. Final Sign Out
+        await supabase.auth.signOut();
+        console.log('Account deletion complete.');
+
+        return { success: true };
+
+    } catch (e: any) {
+        console.error("CRITICAL ACCOUNT DELETION FAILURE:", e);
+        return { success: false, error: "A critical error occurred during deletion." };
+    }
 }

@@ -60,7 +60,7 @@ export function FavoriteButton({ ideaId }: FavoriteButtonProps) {
         <button
             onClick={toggleFavorite}
             className={`h-14 w-14 flex items-center justify-center rounded-full border transition-all ${isFavorite
-                ? "bg-violet-600 border-violet-500 text-white"
+                ? "bg-accent-purple border-accent-purple text-white shadow-lg shadow-accent-purple/20"
                 : "bg-white/5 border-white/10 hover:bg-white/10 text-white"
                 }`}
         >

@@ -16,7 +16,9 @@ export function DeleteAccountModal() {
         if (!canDelete) return;
         setIsSubmitting(true);
         const result = await deleteAccount();
-        if (!result?.success) {
+        if (result?.success) {
+            window.location.href = "/?message=Account deleted successfully";
+        } else {
             alert(result?.error || "Failed to delete account");
             setIsSubmitting(false);
         }
@@ -51,8 +53,8 @@ export function DeleteAccountModal() {
                         </h3>
                         <p className="text-gray-500 text-sm mt-2 font-medium">
                             <LocalizedText
-                                en="This action is permanent. All your films, favorites, and profile data will be erased forever."
-                                ko="이 작업은 되돌릴 수 없습니다. 귀하의 모든 필름, 즐겨찾기, 프로필 데이터가 영구적으로 삭제됩니다."
+                                en="This action is permanent. All your films, comments, profile data, and personal information will be erased forever and cannot be recovered."
+                                ko="계정 탈퇴 시 귀하가 게시한 모든 동영상, 댓글, 프로필 데이터 및 개인정보가 영구적으로 삭제되며 복구할 수 없습니다."
                             />
                         </p>
                     </div>
