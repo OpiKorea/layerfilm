@@ -1,250 +1,215 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-# --- Configuration ---
+# --- Environment ---
 $PYTHON_PATH = "c:\layerfilm\.venv\Scripts\python.exe"
 $SD_SCRIPT = "c:\layerfilm\scripts\local-sd-generate.py"
-$VIDEO_SCRIPT = "c:\layerfilm\scripts\generate-recursive-chain.ps1"
-$TEMP_DIR = "Z:\layerfilm\studio"
-if (!(Test-Path $TEMP_DIR)) { New-Item -ItemType Directory -Path $TEMP_DIR -Force }
+$SVD_SCRIPT = "c:\layerfilm\scripts\generate-recursive-chain.ps1"
+$Z_DRIVE = "Z:\layerfilm\studio"
+if (!(Test-Path $Z_DRIVE)) { New-Item -ItemType Directory -Path $Z_DRIVE -Force }
 
-# --- Form Setup ---
+# --- Branding & HUD Colors ---
+$NEON_CYAN = [Drawing.Color]::FromArgb(0, 245, 255)
+$NEON_PURPLE = [Drawing.Color]::FromArgb(160, 32, 240)
+$HUD_BG = [Drawing.Color]::FromArgb(5, 7, 10) # Dark Navy Black
+$PANEL_BORDER = [Drawing.Color]::FromArgb(40, 40, 40)
+$ACCENT_GLOW = [Drawing.Color]::FromArgb(30, 0, 245, 255)
+
+# --- Form Construction ---
 $form = New-Object Windows.Forms.Form
-$form.Text = "LayerFilm Studio PRO - AI Cinema Engine"
-$form.Size = New-Object Drawing.Size(800, 950)
-$form.StartPosition = "CenterScreen"
-$form.BackColor = [Drawing.Color]::FromArgb(5, 5, 5) # Deep Black
+$form.Text = "LAYERFILM DIRECTOR OS // CINEMA REACTOR v4.0"
+$form.Size = New-Object Drawing.Size(1100, 950)
+$form.BackColor = $HUD_BG
 $form.ForeColor = [Drawing.Color]::White
-$form.Font = New-Object Drawing.Font("Segoe UI", 10)
-$form.FormBorderStyle = "FixedDialog"
+$form.Font = New-Object Drawing.Font("Segoe UI Semibold", 10)
+$form.StartPosition = "CenterScreen"
+$form.FormBorderStyle = "FixedSingle"
 $form.MaximizeBox = $false
 
-# --- Header Section ---
+# 1. HEADER HUD
 $pnlHeader = New-Object Windows.Forms.Panel
 $pnlHeader.Dock = "Top"
-$pnlHeader.Height = 100
-$pnlHeader.BackColor = [Drawing.Color]::FromArgb(15, 15, 15)
+$pnlHeader.Height = 80
+$pnlHeader.BackColor = [Drawing.Color]::FromArgb(10, 15, 25)
 $form.Controls.Add($pnlHeader)
 
-$titleLine1 = New-Object Windows.Forms.Label
-$titleLine1.Text = "LAYERFILM"
-$titleLine1.Font = New-Object Drawing.Font("Segoe UI", 28, [Drawing.FontStyle]::Bold)
-$titleLine1.ForeColor = [Drawing.Color]::FromArgb(0, 245, 255) # Neon Cyan
-$titleLine1.Size = New-Object Drawing.Size(400, 50)
-$titleLine1.Location = New-Object Drawing.Point(30, 25)
-$pnlHeader.Controls.Add($titleLine1)
+$lblStatus = New-Object Windows.Forms.Label
+$lblStatus.Text = "● SYSTEM OPERATIONAL // CONNECTION: ENCRYPTED // AI CORE: ACTIVE"
+$lblStatus.ForeColor = [Drawing.Color]::LimeGreen
+$lblStatus.Font = New-Object Drawing.Font("Consolas", 8)
+$lblStatus.Location = New-Object Drawing.Point(30, 5)
+$lblStatus.AutoSize = $true
+$pnlHeader.Controls.Add($lblStatus)
 
-$titleLine2 = New-Object Windows.Forms.Label
-$titleLine2.Text = "STUDIO PRO"
-$titleLine2.Font = New-Object Drawing.Font("Segoe UI", 14, [Drawing.FontStyle]::Bold)
-$titleLine2.ForeColor = [Drawing.Color]::FromArgb(160, 32, 240) # Neon Purple
-$titleLine2.Location = New-Object Drawing.Point(260, 45)
-$titleLine2.Size = New-Object Drawing.Size(200, 30)
-$pnlHeader.Controls.Add($titleLine2)
+$lblLogo = New-Object Windows.Forms.Label
+$lblLogo.Text = "LAYERFILM"
+$lblLogo.Font = New-Object Drawing.Font("Segoe UI Black", 28, [Drawing.FontStyle]::Italic)
+$lblLogo.ForeColor = $NEON_CYAN
+$lblLogo.Location = New-Object Drawing.Point(25, 20)
+$lblLogo.Size = New-Object Drawing.Size(300, 50)
+$pnlHeader.Controls.Add($lblLogo)
 
-# --- Scrollable Container ---
-$container = New-Object Windows.Forms.Panel
-$container.Dock = "Fill"
-$container.AutoScroll = $true
-$container.Padding = New-Object Windows.Forms.Padding(30)
-$form.Controls.Add($container)
+$lblDirector = New-Object Windows.Forms.Label
+$lblDirector.Text = "DIRECTOR EDITION"
+$lblDirector.Font = New-Object Drawing.Font("Segoe UI Semibold", 10, [Drawing.FontStyle]::Bold)
+$lblDirector.ForeColor = $NEON_PURPLE
+$lblDirector.Location = New-Object Drawing.Point(285, 45)
+$lblDirector.AutoSize = $true
+$pnlHeader.Controls.Add($lblDirector)
 
-$y = 20
+# 2. MAIN HUB (Center Space)
+$mainHub = New-Object Windows.Forms.Panel
+$mainHub.Dock = "Fill"
+$mainHub.Padding = New-Object Windows.Forms.Padding(30)
+$form.Controls.Add($mainHub)
 
-# --- STEP 1: IMAGE GENERATION ---
-$lblStep1 = New-Object Windows.Forms.Label
-$lblStep1.Text = "01. VISUAL FOUNDATION (AI IMAGE)"
-$lblStep1.Font = New-Object Drawing.Font("Segoe UI", 12, [Drawing.FontStyle]::Bold)
-$lblStep1.ForeColor = [Drawing.Color]::White
-$lblStep1.Location = New-Object Drawing.Point(30, $y)
-$lblStep1.Size = New-Object Drawing.Size(500, 30)
-$container.Controls.Add($lblStep1)
-$y += 40
+# --- SECTION: THE REACTOR (One-Click Interface) ---
+$pnlReactor = New-Object Windows.Forms.Panel
+$pnlReactor.Dock = "Top"
+$pnlReactor.Height = 280
+$pnlReactor.BackColor = [Drawing.Color]::FromArgb(15, 20, 30)
+$pnlReactor.BorderStyle = "FixedSingle"
+$mainHub.Controls.Add($pnlReactor)
 
-$txtImgPrompt = New-Object Windows.Forms.TextBox
-$txtImgPrompt.Multiline = $true
-$txtImgPrompt.PlaceholderText = "Describe your base scene (e.g., A rainy cyberpunk street at night...)"
-$txtImgPrompt.Location = New-Object Drawing.Point(30, $y)
-$txtImgPrompt.Size = New-Object Drawing.Size(500, 60)
-$txtImgPrompt.BackColor = [Drawing.Color]::FromArgb(20, 20, 20)
-$txtImgPrompt.ForeColor = [Drawing.Color]::White
-$txtImgPrompt.BorderStyle = "FixedSingle"
-$container.Controls.Add($txtImgPrompt)
+$lblReactorTitle = New-Object Windows.Forms.Label
+$lblReactorTitle.Text = "CINEMA REACTOR: ONE-CLICK PRODUCTION"
+$lblReactorTitle.Font = New-Object Drawing.Font("Segoe UI", 12, [Drawing.FontStyle]::Bold)
+$lblReactorTitle.ForeColor = $NEON_CYAN
+$lblReactorTitle.Location = New-Object Drawing.Point(20, 20)
+$lblReactorTitle.AutoSize = $true
+$pnlReactor.Controls.Add($lblReactorTitle)
 
-$btnGenImage = New-Object Windows.Forms.Button
-$btnGenImage.Text = "AUTO-GENERATE"
-$btnGenImage.Location = New-Object Drawing.Point(540, $y)
-$btnGenImage.Size = New-Object Drawing.Size(180, 60)
-$btnGenImage.BackColor = [Drawing.Color]::FromArgb(160, 32, 240)
-$btnGenImage.FlatStyle = "Flat"
-$btnGenImage.Font = New-Object Drawing.Font("Segoe UI", 10, [Drawing.FontStyle]::Bold)
-$container.Controls.Add($btnGenImage)
-$y += 80
+$txtMasterPrompt = New-Object Windows.Forms.TextBox
+$txtMasterPrompt.Multiline = $true
+$txtMasterPrompt.Location = New-Object Drawing.Point(20, 55)
+$txtMasterPrompt.Size = New-Object Drawing.Size(1000, 100)
+$txtMasterPrompt.BackColor = [Drawing.Color]::FromArgb(5, 5, 5)
+$txtMasterPrompt.ForeColor = [Drawing.Color]::White
+$txtMasterPrompt.BorderStyle = "FixedSingle"
+$txtMasterPrompt.Font = New-Object Drawing.Font("Segoe UI", 14)
+$txtMasterPrompt.Text = "A rainy cyberpunk city at night, camera slowly zooming into a neon bar sign..."
+$pnlReactor.Controls.Add($txtMasterPrompt)
 
-# Image Preview Area
+$btnGenerate = New-Object Windows.Forms.Button
+$btnGenerate.Text = "INITIALIZE TOTAL MASTERPIECE PROTOCOL"
+$btnGenerate.Font = New-Object Drawing.Font("Segoe UI", 18, [Drawing.FontStyle]::Bold)
+$btnGenerate.Location = New-Object Drawing.Point(20, 175)
+$btnGenerate.Size = New-Object Drawing.Size(1000, 80)
+$btnGenerate.BackColor = $NEON_CYAN
+$btnGenerate.ForeColor = [Drawing.Color]::Black
+$btnGenerate.FlatStyle = "Flat"
+$btnGenerate.Cursor = "Hand"
+$pnlReactor.Controls.Add($btnGenerate)
+
+# --- BOTTOM ROW: Preview & Advanced & Logs ---
+$pnlBottom = New-Object Windows.Forms.Panel
+$pnlBottom.Dock = "Bottom"
+$pnlBottom.Height = 520
+$mainHub.Controls.Add($pnlBottom)
+
+# Left: Preview (Visual Check)
+$pnlVisuals = New-Object Windows.Forms.Panel
+$pnlVisuals.Width = 650
+$pnlVisuals.Dock = "Left"
+$pnlBottom.Controls.Add($pnlVisuals)
+
+$lblPrev = New-Object Windows.Forms.Label
+$lblPrev.Text = "LIVE VISUAL MONITOR"
+$lblPrev.Location = New-Object Drawing.Point(0, 20); $lblPrev.AutoSize = $true; $pnlVisuals.Controls.Add($lblPrev)
+
 $picPreview = New-Object Windows.Forms.PictureBox
-$picPreview.Location = New-Object Drawing.Point(30, $y)
-$picPreview.Size = New-Object Drawing.Size(690, 388) # 16:9 aspect ratio
-$picPreview.BackColor = [Drawing.Color]::FromArgb(10, 10, 10)
+$picPreview.Location = New-Object Drawing.Point(0, 45)
+$picPreview.Size = New-Object Drawing.Size(630, 354) # 16:9
+$picPreview.BackColor = [Drawing.Color]::Black
 $picPreview.BorderStyle = "FixedSingle"
 $picPreview.SizeMode = "Zoom"
-$container.Controls.Add($picPreview)
-$y += 410
+$pnlVisuals.Controls.Add($picPreview)
 
-# Path display
-$txtImagePath = New-Object Windows.Forms.TextBox
-$txtImagePath.ReadOnly = $true
-$txtImagePath.Location = New-Object Drawing.Point(30, $y)
-$txtImagePath.Size = New-Object Drawing.Size(690, 25)
-$txtImagePath.BackColor = [Drawing.Color]::FromArgb(15, 15, 15)
-$txtImagePath.ForeColor = [Drawing.Color]::Gray
-$txtImagePath.BorderStyle = "None"
-$container.Controls.Add($txtImagePath)
-$y += 50
+# Right: Advanced Controls (Hidden by default or smaller)
+$pnlSystem = New-Object Windows.Forms.Panel
+$pnlSystem.Dock = "Fill"
+$pnlBottom.Controls.Add($pnlSystem)
 
-# --- STEP 2: VIDEO MOTION ---
-$lblStep2 = New-Object Windows.Forms.Label
-$lblStep2.Text = "02. CINEMATIC MOTION (3-SECOND LAW)"
-$lblStep2.Font = New-Object Drawing.Font("Segoe UI", 12, [Drawing.FontStyle]::Bold)
-$lblStep2.ForeColor = [Drawing.Color]::White
-$lblStep2.Location = New-Object Drawing.Point(30, $y)
-$lblStep2.Size = New-Object Drawing.Size(500, 30)
-$container.Controls.Add($lblStep2)
-$y += 40
+$lblSettings = New-Object Windows.Forms.Label
+$lblSettings.Text = "CORE PARAMETERS"
+$lblSettings.Location = New-Object Drawing.Point(20, 20); $lblSettings.AutoSize = $true; $pnlSystem.Controls.Add($lblSettings)
 
-$txtVidPrompt = New-Object Windows.Forms.TextBox
-$txtVidPrompt.Multiline = $true
-$txtVidPrompt.PlaceholderText = "Describe the motion (e.g., Camera slowly zooms in, neon lights flicker...)"
-$txtVidPrompt.Location = New-Object Drawing.Point(30, $y)
-$txtVidPrompt.Size = New-Object Drawing.Size(690, 60)
-$txtVidPrompt.BackColor = [Drawing.Color]::FromArgb(20, 20, 20)
-$txtVidPrompt.ForeColor = [Drawing.Color]::White
-$txtVidPrompt.BorderStyle = "FixedSingle"
-$container.Controls.Add($txtVidPrompt)
-$y += 80
+$y_set = 45
+$lblD = New-Object Windows.Forms.Label; $lblD.Text = "Duration (s):"; $lblD.Location = New-Object Drawing.Point(20, $y_set); $pnlSystem.Controls.Add($lblD)
+$numSec = New-Object Windows.Forms.NumericUpDown; $numSec.Location = New-Object Drawing.Point(130, $y_set); $numSec.Value = 7; $pnlSystem.Controls.Add($numSec)
+$y_set += 35
+$lblM = New-Object Windows.Forms.Label; $lblM.Text = "Motion Scale:"; $lblM.Location = New-Object Drawing.Point(20, $y_set); $pnlSystem.Controls.Add($lblM)
+$numMot = New-Object Windows.Forms.NumericUpDown; $numMot.Location = New-Object Drawing.Point(130, $y_set); $numMot.Value = 40; $numMot.Maximum = 255; $pnlSystem.Controls.Add($numMot)
+$y_set += 35
+$lblN = New-Object Windows.Forms.Label; $lblN.Text = "Stability:"; $lblN.Location = New-Object Drawing.Point(20, $y_set); $pnlSystem.Controls.Add($lblN)
+$numNoi = New-Object Windows.Forms.NumericUpDown; $numNoi.Location = New-Object Drawing.Point(130, $y_set); $numNoi.DecimalPlaces = 1; $numNoi.Value = 0.2; $pnlNoi = 1; $pnlSystem.Controls.Add($numNoi)
 
-# Settings Row
-$panelSettings = New-Object Windows.Forms.Panel
-$panelSettings.Location = New-Object Drawing.Point(30, $y)
-$panelSettings.Size = New-Object Drawing.Size(690, 60)
-$container.Controls.Add($panelSettings)
-
-$lblDur = New-Object Windows.Forms.Label
-$lblDur.Text = "DURATION (S)"
-$lblDur.Location = New-Object Drawing.Point(0, 0)
-$lblDur.ForeColor = [Drawing.Color]::Gray
-$panelSettings.Controls.Add($lblDur)
-
-$numSeconds = New-Object Windows.Forms.NumericUpDown
-$numSeconds.Location = New-Object Drawing.Point(0, 25)
-$numSeconds.Size = New-Object Drawing.Size(80, 25)
-$numSeconds.Value = 7
-$numSeconds.BackColor = [Drawing.Color]::FromArgb(20, 20, 20)
-$numSeconds.ForeColor = [Drawing.Color]::White
-$panelSettings.Controls.Add($numSeconds)
-
-$btnExecute = New-Object Windows.Forms.Button
-$btnExecute.Text = "EXECUTE CINEMA PROTOCOL"
-$btnExecute.Location = New-Object Drawing.Point(120, 0)
-$btnExecute.Size = New-Object Drawing.Size(570, 50)
-$btnExecute.BackColor = [Drawing.Color]::FromArgb(0, 245, 255)
-$btnExecute.ForeColor = [Drawing.Color]::Black
-$btnExecute.FlatStyle = "Flat"
-$btnExecute.Font = New-Object Drawing.Font("Segoe UI", 14, [Drawing.FontStyle]::Bold)
-$panelSettings.Controls.Add($btnExecute)
-$y += 80
-
-# --- Log Box ---
+# Log Box at bottom of System Panel
 $txtLog = New-Object Windows.Forms.TextBox
 $txtLog.Multiline = $true
 $txtLog.ReadOnly = $true
 $txtLog.ScrollBars = "Vertical"
-$txtLog.Location = New-Object Drawing.Point(30, $y)
-$txtLog.Size = New-Object Drawing.Size(690, 150)
-$txtLog.BackColor = [Drawing.Color]::Black
-$txtLog.ForeColor = [Drawing.Color]::FromArgb(0, 255, 0)
+$txtLog.Location = New-Object Drawing.Point(20, 160)
+$txtLog.Size = New-Object Drawing.Size(350, 240)
+$txtLog.BackColor = [Drawing.Color]::FromArgb(5, 5, 5)
+$txtLog.ForeColor = [Drawing.Color]::LimeGreen
 $txtLog.Font = New-Object Drawing.Font("Consolas", 9)
-$txtLog.Text = "LAYERFILM OS [Version 10.0] Ready.`r`n"
-$container.Controls.Add($txtLog)
-$y += 180
+$txtLog.BorderStyle = "FixedSingle"
+$txtLog.Text = ">>> DIRECTOR OS ONLINE.`r`n>>> AWAITING COMMAND...`r`n"
+$pnlSystem.Controls.Add($txtLog)
 
-# Dummy spacer for scrolling
-$spacer = New-Object Windows.Forms.Label
-$spacer.Location = New-Object Drawing.Point(30, $y)
-$spacer.Size = New-Object Drawing.Size(10, 20)
-$container.Controls.Add($spacer)
+# --- EVENTS ---
 
-# --- Events ---
+$btnGenerate.Add_Click({
+        $p = $txtMasterPrompt.Text
+        if ([string]::IsNullOrWhiteSpace($p)) { return }
 
-$btnGenImage.Add_Click({
-        $prompt = $txtImgPrompt.Text
-        if ([string]::IsNullOrWhiteSpace($prompt)) { 
-            [Windows.Forms.MessageBox]::Show("Please enter an image prompt first.")
-            return 
-        }
+        $btnGenerate.Enabled = $false
+        $btnGenerate.BackColor = [Drawing.Color]::Gray
+        $btnGenerate.Text = "REACTOR HEATING UP... PLEASE WAIT"
+    
+        $txtLog.Clear()
+        $txtLog.AppendText(">>> [1/2] NEURAL RENDERING: BASE IMAGE...`r`n")
+    
+        $outImg = Join-Path $Z_DRIVE "director_base_$(Get-Date -Format 'HHmmss').png"
+        $outVid = Join-Path $Z_DRIVE "masterpiece_$(Get-Date -Format 'HHmmss').mp4"
+        $sec = $numSec.Value
+        $mot = $numMot.Value
+        $noi = $numNoi.Value
 
-        $btnGenImage.Enabled = $false
-        $btnGenImage.Text = "GENERATING..."
-        $txtLog.AppendText("🎨 Requesting AI Image: '$prompt'...`r`n")
-
-        $outImg = Join-Path $TEMP_DIR "base_$(Get-Date -Format 'HHmmss').png"
-
-        $job = Start-Job -ScriptBlock {
+        # STEP 1: Image Generation
+        $jobImg = Start-Job -ScriptBlock {
             param($py, $sc, $p, $out)
-            & $py $sc --prompt $p --output $out
-        } -ArgumentList $PYTHON_PATH, $SD_SCRIPT, $prompt, $outImg
+            & $py $sc --prompt $p --output $out --steps 35
+        } -ArgumentList $PYTHON_PATH, $SD_SCRIPT, $p, $outImg
 
-        while ($job.State -eq "Running") {
-            [System.Windows.Forms.Application]::DoEvents()
-            Start-Sleep -Milliseconds 200
-        }
-
-        $results = Receive-Job -Job $job
+        while ($jobImg.State -eq "Running") { [System.Windows.Forms.Application]::DoEvents(); Start-Sleep -Milliseconds 200 }
+    
         if (Test-Path $outImg) {
             $picPreview.Image = [Drawing.Image]::FromFile($outImg)
-            $txtImagePath.Text = $outImg
-            $txtLog.AppendText("✅ Image Ready: $outImg`r`n")
+            $txtLog.AppendText(">>> [SUCCESS] IMAGE CAPTURED.`r`n")
+            $txtLog.AppendText(">>> [2/2] MOTION CHAINING: 3-SECOND LAW PROTOCOL...`r`n")
+
+            # STEP 2: Video Generation (Chaining)
+            $jobVid = Start-Job -ScriptBlock {
+                param($sc, $img, $p, $out, $sec, $m, $n)
+                powershell -ExecutionPolicy Bypass -File $sc -BaseImage $img -Prompt $p -OutputVideo $out -TotalSeconds $sec
+            } -ArgumentList $SVD_SCRIPT, $outImg, $p, $outVid, $sec, $mot, $noi
+
+            # Update log with job progress lines if possible, but for now just wait
+            while ($jobVid.State -eq "Running") { [System.Windows.Forms.Application]::DoEvents(); Start-Sleep -Milliseconds 500 }
+        
+            $txtLog.AppendText(">>> [COMPLETE] MASTERPIECE READY: $outVid`r`n")
+            [Windows.Forms.MessageBox]::Show("Production Complete!`nSaved to: $outVid")
         }
         else {
-            $txtLog.AppendText("❌ Generation Failed: $results`r`n")
+            $txtLog.AppendText(">>> [ERROR] RENDERING FAILED. ABORTED.`r`n")
         }
 
-        $btnGenImage.Enabled = $true
-        $btnGenImage.Text = "AUTO-GENERATE"
+        $btnGenerate.Enabled = $true
+        $btnGenerate.BackColor = $NEON_CYAN
+        $btnGenerate.Text = "INITIALIZE TOTAL MASTERPIECE PROTOCOL"
     })
 
-$btnExecute.Add_Click({
-        $image = $txtImagePath.Text
-        $p = $txtVidPrompt.Text
-        $sec = $numSeconds.Value
-        $outVid = Join-Path $TEMP_DIR "final_$(Get-Date -Format 'HHmmss').mp4"
-
-        if (-not (Test-Path $image)) { 
-            [Windows.Forms.MessageBox]::Show("Please generate or select a base image first.")
-            return 
-        }
-
-        $btnExecute.Enabled = $false
-        $btnExecute.Text = "PROTOCOL ACTIVE..."
-        $txtLog.AppendText("🎬 Initiating Video Chaining ($sec Seconds)...`r`n")
-
-        $job = Start-Job -ScriptBlock {
-            param($sc, $img, $p, $out, $s)
-            powershell -ExecutionPolicy Bypass -File $sc -BaseImage $img -Prompt $p -OutputVideo $out -TotalSeconds $s
-        } -ArgumentList $VIDEO_SCRIPT, $image, $p, $outVid, $sec
-
-        while ($job.State -eq "Running") {
-            [System.Windows.Forms.Application]::DoEvents()
-            Start-Sleep -Milliseconds 500
-        }
-
-        $results = Receive-Job -Job $job
-        $txtLog.AppendText("🔗 Complete: $outVid`r`n")
-        [Windows.Forms.MessageBox]::Show("Masterpiece Rendered!`n$outVid")
-
-        $btnExecute.Enabled = $true
-        $btnExecute.Text = "EXECUTE CINEMA PROTOCOL"
-    })
-
-# Show
+# Launch GUI
 $form.ShowDialog()
