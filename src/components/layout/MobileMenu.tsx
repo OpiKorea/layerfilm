@@ -82,7 +82,9 @@ export function MobileMenu({ user, profile }: MobileMenuProps) {
                                         className="flex items-center gap-4 px-4 py-3 text-violet-400 hover:bg-violet-500/10 rounded-xl transition-all"
                                     >
                                         <Wallet className="w-5 h-5" />
-                                        <span className="font-bold">{t.nav.dashboard}</span>
+                                        <span className="font-bold truncate max-w-[150px]">
+                                            {profile?.username || t.nav.dashboard}
+                                        </span>
                                     </Link>
                                     {profile?.role === 'admin' && (
                                         <Link

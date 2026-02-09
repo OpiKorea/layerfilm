@@ -61,8 +61,8 @@ export async function Navbar() {
 
                             {/* User Profile Link (Nickname + Avatar) */}
                             <Link href="/dashboard" className="flex items-center gap-3 pl-4 pr-1.5 py-1.5 bg-white/5 hover:bg-accent/10 rounded-full border border-white/10 hover:border-accent/30 transition-all group">
-                                <span className="text-2xl font-black tracking-tighter text-white group-hover:text-accent transition-colors">
-                                    LAYER<span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-purple">FILM</span>
+                                <span className="max-w-[100px] truncate text-[10px] md:text-xs font-bold tracking-widest text-gray-400 group-hover:text-accent transition-colors uppercase">
+                                    {profile?.username || (user.email ? user.email.split('@')[0] : 'USER')}
                                 </span>
                                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent-purple flex items-center justify-center shadow-lg shadow-accent/20 group-hover:scale-105 transition-transform">
                                     {profile?.avatar_url ? (
