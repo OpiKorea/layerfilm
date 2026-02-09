@@ -3,7 +3,6 @@ import { getIdeas } from "@/lib/data";
 import { IdeaItem } from "@/lib/types";
 import Link from "next/link";
 import { Play, Info } from "lucide-react";
-import { HeroVideoLoop } from "@/components/video/HeroVideoLoop";
 import { LocalizedText } from "@/components/common/LocalizedText";
 
 export default async function Home() {
@@ -26,10 +25,8 @@ export default async function Home() {
         <div className="flex flex-col min-h-screen pb-20 bg-[#141414]">
             {/* 1. Hero Section (Most Popular) */}
             <section className="relative w-full h-[80vh] group overflow-hidden border-b border-white/5">
-                {/* Background Video/Image */}
-                <div className="absolute inset-0 bg-black z-0">
-                    <HeroVideoLoop videoUrl="/drama-assets/showcase/scene_001_7s_master.mp4" thumbnailUrl="/drama-assets/showcase/base.png" />
-                </div>
+                {/* Simple Dark Hero Placeholder */}
+                <div className="absolute inset-0 bg-[#0a0a0a] z-0" />
 
 
                 {/* Metadata Layer */}
