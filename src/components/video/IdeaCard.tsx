@@ -1,3 +1,4 @@
+"use client";
 import { Play, Clock, Award, Heart } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { getMediaUrl } from "@/lib/media";
