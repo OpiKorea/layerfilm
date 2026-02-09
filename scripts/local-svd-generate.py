@@ -9,7 +9,9 @@ parser = argparse.ArgumentParser(description="Local SVD Video Generation Script"
 parser.add_argument("--image", type=str, required=True, help="Input image path")
 parser.add_argument("--output", type=str, required=True, help="Output video path")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--frames", type=int, default=21, help="Number of frames to generate (21=3s, 7=1s)")
+parser.add_argument("--frames", type=int, default=21, help="Number of frames (21=3s)")
+parser.add_argument("--motion", type=int, default=32, help="Motion Bucket ID (1-255)")
+parser.add_argument("--noise", type=float, default=0.2, help="Noise Aug Strength (0-1)")
 
 args = parser.parse_args()
 
@@ -55,8 +57,8 @@ frames = pipe(
     image, 
     decode_chunk_size=2,
     generator=generator,
-    motion_bucket_id=32,
-    noise_aug_strength=0.2,
+    motion_bucket_id=args.motion,
+    noise_aug_strength=args.noise,
     num_frames=args.frames
 ).frames[0]
 
