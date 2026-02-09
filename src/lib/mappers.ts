@@ -29,6 +29,8 @@ export function mapRowToIdea(row: any): IdeaItem {
         metrics: {
             views: s.view_count || s.metrics?.views || 0,
             likes: s.like_count || s.metrics?.likes || 0
-        }
+        },
+        created_at: s.created_at || new Date().toISOString()
     };
+
 }

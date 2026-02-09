@@ -1,0 +1,380 @@
+{
+  "node": {
+    "001a12759ed3595f516c5960dce642e4ab94c950e9": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "deleteAccount",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "deleteAccount",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "004fd2fb25930ef7068181c897f9f2797c80582cc6": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "signOut",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "action-browser"
+      },
+      "exportedName": "signOut",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "40259a322631d80d69ac3bce45034934ba38258e12": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "updatePassword",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "updatePassword",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "4038e9669a98ad5b47901869646898a960fe0265b4": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "resendOtp",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "resendOtp",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "4090ecd0e8a8605b1dc0fdcf5446aa5028bcde6473": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "changePassword",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "changePassword",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "40a5307c9d000b9ed4394b02271c85f96ad2fb79b1": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "requestPasswordReset",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "requestPasswordReset",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "40bd5965d6f2e5c1bcc3d42526c301f9e318f45ce6": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "login",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "login",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "40d2019f451ebf52eea865f59e2e21e978a2fccf5b": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "testResend",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "testResend",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "40d4ff4158eb5b3706ed21bf6e8afe1864eea62cc7": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "signup",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "signup",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "40e8ae682e855277b08c4bdb29f2d3e00ff41bccba": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "completeSignupWithOtp",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "completeSignupWithOtp",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "6034c7323fb16f49e92f0f4562c69163545f52f082": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "verifyEmailOtp",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "verifyEmailOtp",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "6056444eb6d09ac9551541132d002b43a29d5254b8": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "sendSignupOtp",
+          "filename": "src/app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "sendSignupOtp",
+      "filename": "src/app/actions/auth.ts"
+    },
+    "404684603589b3eda7fbdf5e6a4959ba010ef2ddf9": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "getIdeas",
+          "filename": "src/app/actions/ideas.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "action-browser"
+      },
+      "exportedName": "getIdeas",
+      "filename": "src/app/actions/ideas.ts"
+    },
+    "402c31f4765968f5f0deed4701bfcf16fde9cd9496": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "getComments",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "getComments",
+      "filename": "src/lib/data.ts"
+    },
+    "407301460afae7a70096407292b4106c1de03c827c": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "getIdeaById",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "getIdeaById",
+      "filename": "src/lib/data.ts"
+    },
+    "407db7302c362dbff6dedf3aca1e2d5113a5409193": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "createIdea",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "createIdea",
+      "filename": "src/lib/data.ts"
+    },
+    "40893ab73075292817244e54ac8aa221fe0ddfa62d": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "deleteIdea",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "action-browser"
+      },
+      "exportedName": "deleteIdea",
+      "filename": "src/lib/data.ts"
+    },
+    "4099434bcccc7f11be2d0a4a89041dadbf5b0515db": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "reportIdea",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "reportIdea",
+      "filename": "src/lib/data.ts"
+    },
+    "40c12388d16e149c2e6e2e80707ce000606813e74e": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "getPurchasedIdeas",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "getPurchasedIdeas",
+      "filename": "src/lib/data.ts"
+    },
+    "40f5046c312427400fefa0543e5409127993dc5dc7": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "getUserSubmissions",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "getUserSubmissions",
+      "filename": "src/lib/data.ts"
+    },
+    "608dc83b93f30afdad54121a38b6d5a7133b242287": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "updateMockIdea",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "updateMockIdea",
+      "filename": "src/lib/data.ts"
+    },
+    "6098172a6239d3b441f9b0e6a034c0e410277e8abf": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "deleteComment",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "deleteComment",
+      "filename": "src/lib/data.ts"
+    },
+    "60e92f3455bb82d7c2304362edb9c824836ae7ed03": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "updateIdeaStatus",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "action-browser"
+      },
+      "exportedName": "updateIdeaStatus",
+      "filename": "src/lib/data.ts"
+    },
+    "780378d54c33e28c6cfaff1408640a1e8e924458d8": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "postComment",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "postComment",
+      "filename": "src/lib/data.ts"
+    },
+    "7e034176b4a5cfb48c87e845d8e4a239f0f6398c67": {
+      "workers": {
+        "app/dashboard/moderation/page": {
+          "moduleId": 59918,
+          "async": false,
+          "exportedName": "getIdeas",
+          "filename": "src/lib/data.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/moderation/page": "rsc"
+      },
+      "exportedName": "getIdeas",
+      "filename": "src/lib/data.ts"
+    }
+  },
+  "edge": {}
+}

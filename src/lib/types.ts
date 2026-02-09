@@ -28,7 +28,9 @@ export interface IdeaItem {
         reactions?: Record<string, number>;
     };
     isUnlocked?: boolean;
+    created_at: string;
 }
+
 
 export interface CommentItem {
     id: string;

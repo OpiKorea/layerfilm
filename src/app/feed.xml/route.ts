@@ -1,10 +1,13 @@
 import { getIdeas } from '@/lib/data';
 
-export async function GET() {
-    const ideas = await getIdeas();
-    const domain = 'https://layerfilm.com';
+// Force update: 2026-02-09
 
-    const xml = `<?xml version="1.0" encoding="UTF-8" ?>
+
+export async function GET() {
+  const ideas = await getIdeas();
+  const domain = 'https://layerfilm.com';
+
+  const xml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>LayerFilm - AI Cinema Releases</title>
@@ -19,16 +22,17 @@ export async function GET() {
       <guid>${domain}/idea/${idea.id}</guid>
       <description><![CDATA[${idea.description}]]></description>
       <pubDate>${new Date(idea.created_at).toUTCString()}</pubDate>
-      <enclosure url="${idea.video_url || ''}" type="video/mp4" />
+      <enclosure url="${idea.videoUrl || ''}" type="video/mp4" />
+
     </item>
     `).join('')}
   </channel>
 </rss>`;
 
-    return new Response(xml, {
-        headers: {
-            'Content-Type': 'application/xml',
-            'Cache-Control': 's-maxage=3600, stale-while-revalidate',
-        },
-    });
+  return new Response(xml, {
+    headers: {
+      'Content-Type': 'application/xml',
+      'Cache-Control': 's-maxage=3600, stale-while-revalidate',
+    },
+  });
 }
