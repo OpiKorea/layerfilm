@@ -21,7 +21,7 @@ foreach ($img in $images) {
     else {
         Write-Host "?? Animating: $baseName ..."
         # SVD-XT (Default 25 frames, 7fps)
-        & $python $script --image "$($img.FullName)" --output $videoPath
+        & $python $script --image "$($img.FullName)" --output $videoPath --skip-master
     }
 }
 Write-Host "?? All Unicorn Clips Animated!"

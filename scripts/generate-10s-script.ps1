@@ -11,3 +11,6 @@ $scenes = @(
 
 $scenes | ConvertTo-Json -Depth 4 | Out-File -FilePath $jsonFile -Encoding UTF8
 Write-Host "✅ Generated 10s Script: $jsonFile"
+
+# Run Production
+powershell -ExecutionPolicy Bypass -File c:\layerfilm\scripts\produce-recursive-chain.ps1

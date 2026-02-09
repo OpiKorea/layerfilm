@@ -1,12 +1,16 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-# --- Environment ---
-$Z_DRIVE = "Z:\layerfilm\studio"
+$Z_ROOT = "Z:\layerfilm\studio"
+$IMG_DIR = Join-Path $Z_ROOT "exports\images"
+$VID_DIR = Join-Path $Z_ROOT "exports\videos"
 $SVD_PS = "c:\layerfilm\scripts\generate-recursive-chain.ps1"
 $VENV_PY = "c:\layerfilm\.venv\Scripts\python.exe"
 $SD_PY = "c:\layerfilm\scripts\local-sd-generate.py"
-if (!(Test-Path $Z_DRIVE)) { New-Item -ItemType Directory -Path $Z_DRIVE -Force | Out-Null }
+
+foreach ($dir in @($IMG_DIR, $VID_DIR)) {
+    if (!(Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+}
 
 # --- Aesthetic Tokens ---
 $COLOR_ACCENT = [Drawing.Color]::FromArgb(0, 245, 255)
@@ -31,6 +35,12 @@ $form.Controls.Add($pnlHeader)
 
 $lblLogo = New-Object Windows.Forms.Label; $lblLogo.Text = "LAYERFILM"; $lblLogo.Font = New-Object Drawing.Font("Segoe UI Black", 30, [Drawing.FontStyle]::Italic); $lblLogo.ForeColor = $COLOR_ACCENT; $lblLogo.Location = New-Object Drawing.Point(40, 20); $lblLogo.AutoSize = $true; $pnlHeader.Controls.Add($lblLogo)
 $lblSub = New-Object Windows.Forms.Label; $lblSub.Text = "CINEMA ENGINE // v11.0 PRO"; $lblSub.Font = New-Object Drawing.Font("Segoe UI", 10, [Drawing.FontStyle]::Bold); $lblSub.ForeColor = $COLOR_PURPLE; $lblSub.Location = New-Object Drawing.Point(320, 45); $lblSub.AutoSize = $true; $pnlHeader.Controls.Add($lblSub)
+
+$btnOpenFolder = New-Object Windows.Forms.Button; $btnOpenFolder.Text = "📂 Open Video Exports (Z:)"; $btnOpenFolder.Location = New-Object Drawing.Point(950, 35); $btnOpenFolder.Size = New-Object Drawing.Size(240, 40); $btnOpenFolder.BackColor = [Drawing.Color]::FromArgb(25, 25, 35); $btnOpenFolder.ForeColor = [Drawing.Color]::White; $btnOpenFolder.FlatStyle = "Flat"; $btnOpenFolder.Cursor = "Hand"
+$pnlHeader.Controls.Add($btnOpenFolder)
+
+# --- Logic ---
+$btnOpenFolder.Add_Click({ explorer $VID_DIR })
 
 # -> 2. SIDEBAR (LOGS & SETTINGS)
 $pnlSide = New-Object Windows.Forms.Panel; $pnlSide.Location = New-Object Drawing.Point(40, 140); $pnlSide.Size = New-Object Drawing.Size(320, 800); $pnlSide.BackColor = $COLOR_PANEL; $pnlSide.BorderStyle = "FixedSingle"; $form.Controls.Add($pnlSide)
@@ -63,6 +73,8 @@ $txtPrompt = New-Object Windows.Forms.TextBox; $txtPrompt.Multiline = $true; $tx
 
 $btnExec = New-Object Windows.Forms.Button; $btnExec.Text = "START ONE-CLICK AUTOMATION"; $btnExec.Location = New-Object Drawing.Point(20, 135); $btnExec.Size = New-Object Drawing.Size(750, 50); $btnExec.BackColor = $COLOR_ACCENT; $btnExec.ForeColor = [Drawing.Color]::Black; $btnExec.FlatStyle = "Flat"; $btnExec.Font = New-Object Drawing.Font("Segoe UI", 12, [Drawing.FontStyle]::Bold); $pnlReactor.Controls.Add($btnExec)
 
+$lblProgress = New-Object Windows.Forms.Label; $lblProgress.Text = "IDLE"; $lblProgress.ForeColor = $COLOR_ACCENT; $lblProgress.Font = New-Object Drawing.Font("Segoe UI", 9, [Drawing.FontStyle]::Bold); $lblProgress.Location = New-Object Drawing.Point(580, 25); $lblProgress.Size = New-Object Drawing.Size(180, 20); $lblProgress.TextAlign = "MiddleRight"; $pnlReactor.Controls.Add($lblProgress)
+
 # 3B. OPTIONAL ASSETS (BOTTOM)
 $pnlOptional = New-Object Windows.Forms.Panel; $pnlOptional.Location = New-Object Drawing.Point(0, 220); $pnlOptional.Size = New-Object Drawing.Size(800, 80); $pnlOptional.BackColor = [Drawing.Color]::FromArgb(10, 12, 16); $pnlProd.Controls.Add($pnlOptional)
 $lblOpt = New-Object Windows.Forms.Label; $lblOpt.Text = "OPTIONAL: EXTERNAL IMAGE SOURCE (OVERRIDE AI GENERATION)"; $lblOpt.ForeColor = [Drawing.Color]::Gray; $lblOpt.Font = New-Object Drawing.Font("Segoe UI", 7, [Drawing.FontStyle]::Bold); $lblOpt.Location = New-Object Drawing.Point(20, 10); $lblOpt.AutoSize = $true; $pnlOptional.Controls.Add($lblOpt)
@@ -84,8 +96,8 @@ $btnExec.Add_Click({
         $imgPath = $txtImgPath.Text
         $btnExec.Enabled = $false; $txtLog.AppendText(">>> [MSG] Director Initialized...`r`n")
     
-        $outBase = Join-Path $Z_DRIVE "v11_base_$(Get-Date -Format 'HHmmss').png"
-        $outVid = Join-Path $Z_DRIVE "v11_out_$(Get-Date -Format 'HHmmss').mp4"
+        $outBase = Join-Path $IMG_DIR "base_$(Get-Date -Format 'HHmmss').png"
+        $outVid = Join-Path $VID_DIR "masterpiece_$(Get-Date -Format 'HHmmss').mp4"
         $targetImg = ""
 
         # Phase 1: AI Base Establishing
@@ -96,8 +108,32 @@ $btnExec.Add_Click({
         else {
             $txtLog.AppendText(">>> [INFO] AI Generating Cinematic Base...`r`n")
             $jobImg = Start-Job -ScriptBlock { param($py, $sc, $p, $o) & $py $sc --prompt $p --output $o --steps 30 } -ArgumentList $VENV_PY, $SD_PY, $p, $outBase
-            while ($jobImg.State -eq "Running") { [System.Windows.Forms.Application]::DoEvents(); Start-Sleep -Milliseconds 200 }
+            
+            while ($jobImg.State -eq "Running") {
+                [System.Windows.Forms.Application]::DoEvents()
+                $out = Receive-Job -Job $jobImg
+                if ($out) { 
+                    foreach ($line in $out) { 
+                        if ($line -match "\[PROGRESS\] (\d+)/(\d+)") {
+                            $step = $Matches[1]; $total = $Matches[2]; $pct = [int](($step / $total) * 100)
+                            $lblProgress.Text = "GENERATING BASE: $pct%"
+                        }
+                        else {
+                            $txtLog.AppendText(">>> [PY] $line`r`n") 
+                        }
+                    } 
+                }
+                Start-Sleep -Milliseconds 300
+            }
+            $lblProgress.Text = "SYNCING ASSETS..."
+            # Final drain
+            $finalOut = Receive-Job -Job $jobImg
+            if ($finalOut) { foreach ($line in $finalOut) { $txtLog.AppendText(">>> [PY] $line`r`n") } }
+            
             if (Test-Path $outBase) { $targetImg = $outBase }
+            else {
+                $txtLog.AppendText(">>> [ERROR] Base image generation failed. Check Python logs above.`r`n")
+            }
         }
 
         if (![string]::IsNullOrEmpty($targetImg)) {

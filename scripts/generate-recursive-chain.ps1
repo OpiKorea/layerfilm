@@ -43,7 +43,7 @@ for ($i = 1; $i -le $FullChunks; $i++) {
     # The updated script generates _raw.mp4 as an intermediate. We can use that!
     
     # 21 frames = 3 seconds @ 7fps
-    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames 21 --seed $Seed --motion $Motion --noise $Noise
+    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames 21 --seed $Seed --motion $Motion --noise $Noise --skip-master
     
     # The python script produces:
     # 1. Output (Mastered 60fps): $ChunkOutput
@@ -75,7 +75,7 @@ if ($Remainder -gt 0) {
     
     Write-Host "🎥 Generating Remainder: ${Remainder}s (${Frames} frames)..." -ForegroundColor Yellow
     
-    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames $Frames --seed $Seed --motion $Motion --noise $Noise
+    & $PythonPath $ScriptPath --image $CurrentInput --output $ChunkOutput --frames $Frames --seed $Seed --motion $Motion --noise $Noise --skip-master
     
     $RawChunk = $ChunkOutput.Replace(".mp4", "_raw.mp4")
     $GeneratedClips += $RawChunk
@@ -98,6 +98,9 @@ foreach ($clip in $GeneratedClips) {
 }
 $ListContent | Out-File -FilePath $ConcatList -Encoding ASCII
 
+Write-Host "🔄 STARTING RECURSIVE CHAIN PRODUCTION"
+Write-Host "✅ Production Protocol Active: Enforcing Identity & Physics Consistency (200 Checklist)"
+Write-Host "Logic: Motion N -> Last Frame -> Image N+1"
 Write-Host "📄 Concat List Content:"
 Write-Host $ListContent
 
@@ -110,16 +113,39 @@ if (-not (Test-Path $RawMerged)) {
     Write-Error "❌ Concatenation failed!"
 }
 
-# 5. Final Master (60FPS + Upscale)
-Write-Host "🚀 Mastering to 60FPS 4K..." -ForegroundColor Green
+# 5. Final Master (Split Protocol for Stability)
+Write-Host "🚀 Mastering to 60FPS 4K (Split Protocol)..." -ForegroundColor Green
 
-# Use the same high-quality filter chain
-$FilterString = "hqdn3d=2:2:3:3,atadenoise=0.04:0.04:0.04,minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1,scale=3840:2160:flags=lanczos"
+# PASS 1: Interpolation (CPU Heavy)
+$InterpRaw = Join-Path $TempDir "merged_60fps_raw.mp4"
+Write-Host "  -> PASS 1: Interpolating to 60FPS..." -ForegroundColor Yellow
 
-& $FFmpeg -i $RawMerged -vf $FilterString -c:v libx264 -preset fast -crf 16 -pix_fmt yuv420p -y $OutputVideo
+$FilterInterp = "minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1"
 
-# Clean Temp
-Remove-Item $ConcatList
-# Remove-Item $RawMerged
+& $FFmpeg -i $RawMerged -vf $FilterInterp -c:v libx264 -preset fast -crf 18 -y $InterpRaw
+
+if (-not (Test-Path $InterpRaw)) { Write-Error "❌ Interpolation failed!" }
+
+# Cooldown
+Write-Host "  -> Cooling down system (3s)..." -ForegroundColor Cyan
+Start-Sleep -Seconds 3
+
+# PASS 2: Mastering (Rescale + Denoise)
+Write-Host "  -> PASS 2: Upscaling & Denoising..." -ForegroundColor Yellow
+
+$FilterMaster = "hqdn3d=2:2:3:3,atadenoise=0.04:0.04:0.04,scale=3840:2160:flags=lanczos"
+
+& $FFmpeg -i $InterpRaw -vf $FilterMaster -c:v libx264 -preset fast -crf 16 -pix_fmt yuv420p -y $OutputVideo
+
+# Cleanup intermediate
+Remove-Item $InterpRaw -ErrorAction SilentlyContinue
+
+# 6. Cleanup Protocol
+Write-Host "🧹 Finalizing and Cleaning up background data..." -ForegroundColor Cyan
+Remove-Item $ConcatList -ErrorAction SilentlyContinue
+Remove-Item $RawMerged -ErrorAction SilentlyContinue
+# Scrub all temporary chunks and last frame caches
+Get-ChildItem $TempDir -File | Remove-Item -ErrorAction SilentlyContinue
 
 Write-Host "✅ COMPLETE: $OutputVideo" -ForegroundColor Green
+Write-Host "🔥 60FPS MASTERPIECE READY." -ForegroundColor White

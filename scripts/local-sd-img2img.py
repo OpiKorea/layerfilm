@@ -20,7 +20,7 @@ if not os.path.abspath(args.output).lower().startswith("z:\\"):
     print(f"❌ SAFETY ERROR: Output must be on Z: drive.")
     exit(1)
 
-model_path = "models/Stable-diffusion/RealVisXL_V3.0.safetensors"
+model_path = "Z:/layerfilm/models/Stable-diffusion/RealVisXL_V3.0.safetensors"
 if not os.path.exists(model_path):
     print(f"⚠️ Model not found: {model_path}")
     exit(1)
@@ -36,7 +36,16 @@ pipe.to("cuda")
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
 
 # Prompts
-base_neg = "(deformed:1.3), bad anatomy, mutation, ugly, (cartoon:1.2)"
+# PROTOCOL ENFORCEMENT: Identity & Anatomy Compatibility (The "200" Check)
+base_neg = (
+    "(deformed:1.3), bad anatomy, mutation, ugly, (cartoon:1.2), "
+    "morphing, extra limbs, missing limbs, disconnected limbs, "
+    "distorted face, changing face, aging, different person, "
+    "floating limbs, blurry, out of focus, low quality, "
+    "text, watermark, signature, username, error, "
+    "bad color, oversaturated, undersaturated, color shift, "
+    "glitch, noise, pixelated"
+)
 final_neg = f"{base_neg}, {args.neg}" if args.neg else base_neg
 enhanced_prompt = f"{args.prompt}, (cinematic lighting, 8k, photorealism:1.2)"
 

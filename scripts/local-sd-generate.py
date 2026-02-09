@@ -1,3 +1,14 @@
+import os
+import warnings
+import logging
+
+# Silence all underlying noise
+os.environ["DIFFUSERS_VERBOSITY"] = "error"
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+warnings.filterwarnings("ignore", category=FutureWarning)
+logging.getLogger("diffusers").setLevel(logging.ERROR)
+logging.getLogger("transformers").setLevel(logging.ERROR)
+
 import torch
 from diffusers import StableDiffusionXLPipeline, DPMSolverMultistepScheduler
 import argparse
@@ -28,16 +39,20 @@ if not os.path.exists(model_path):
 
 print(f"[INFO] Initializing RealVisXL... (Device: CUDA)")
 
+print(f"[INFO] Loading SDXL Pipeline into Memory...")
 # Load Pipeline (Single file)
 pipe = StableDiffusionXLPipeline.from_single_file(
     model_path,
     torch_dtype=torch.float16,
     use_safetensors=True
 )
+print(f"[INFO] Pipeline Loaded. Moving to CUDA...")
 pipe.to("cuda")
+print(f"[INFO] Moved to CUDA. Configuring Scheduler...")
 
 # Scheduler
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
+print(f"[INFO] Scheduler Optimized.")
 
 # --- Cinema Brain Integration ---
 import json
@@ -57,15 +72,36 @@ if os.path.exists(brain_path):
         print(f"[WARN] Cinema Brain Error: {e}")
 
 final_negative = f"{', '.join(base_neg_list)}, {args.neg}" if args.neg else ", ".join(base_neg_list)
-enhanced_prompt = f"{args.prompt}, ({cinematic_suffix}:1.2)"
+
+# Standardize Type Protocol (Restore compatibility)
+pipe.vae.to(dtype=torch.float16)
+
+# Smart Prompt Truncation for Hardware Limit (77 tokens)
+full_prompt = f"{args.prompt}, ({cinematic_suffix}:1.2)"
+tokens = full_prompt.split()
+if len(tokens) > 70: 
+    # Use a simpler truncation that Pyre will like
+    truncated_tokens = tokens[0:70]
+    enhanced_prompt = " ".join(truncated_tokens)
+    print(f"[WARN] Prompt optimized to fit hardware capacity.")
+else:
+    enhanced_prompt = full_prompt
 
 # Seed
 generator = None
 if args.seed != -1:
     generator = torch.Generator("cuda").manual_seed(args.seed)
 
+# 5. Progress Callback for GUI (Modern API)
+def progress_callback(pipe, step, timestep, callback_kwargs):
+    # step is 0-indexed
+    print(f"[PROGRESS] {step + 1}/{args.steps}", flush=True)
+    return callback_kwargs
+
+# Disable internal tqdm to prevent PowerShell NativeCommandError
+pipe.set_progress_bar_config(disable=True)
+
 print(f"[INFO] Generating: '{args.prompt}'")
-print(f"[INFO] Negative: '{args.neg}'")
 print(f"[INFO] Resolution: {args.width}x{args.height}")
 
 image = pipe(
@@ -75,7 +111,9 @@ image = pipe(
     width=args.width,
     height=args.height,
     guidance_scale=7.0,
-    generator=generator
+    generator=generator,
+    callback_on_step_end=progress_callback,
+    callback_on_step_end_tensor_inputs=["latents"]
 ).images[0]
 
 # Ensure directory

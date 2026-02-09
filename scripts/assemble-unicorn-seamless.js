@@ -3,14 +3,15 @@ const fs = require('fs');
 const path = require('path');
 
 // FFmpeg Path
-const ffmpegPath = "Z:\\layerfilm\\programs\\ffmpeg.exe"; // Updated to Z: drive as requested, if applicable. Or if I can't find it there, I'll stick to C: venv but the user said "use programs from Z:".
-// WAIT. I don't know if ffmpeg is on Z:. I should check Z: first.
-// Let's LIST Z: first before editing.
+const ffmpegPath = "C:\\layerfilm\\.venv\\Lib\\site-packages\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe";
+
+// Project Name from Argument
+const projectName = process.argv[2] || "the-last-unicorn";
 
 // Video directory
-const filmDir = "Z:\\layerfilm\\drama-assets\\the-last-unicorn\\films_4k_60fps";
-const outputDir = "Z:\\layerfilm\\drama-assets\\the-last-unicorn";
-const outputFile = path.join(outputDir, "unicorn-childhood-seamless.mp4");
+const filmDir = `Z:\\layerfilm\\drama-assets\\${projectName}\\films_4k_60fps`;
+const outputDir = `Z:\\layerfilm\\drama-assets\\${projectName}`;
+const outputFile = path.join(outputDir, `${projectName}-seamless.mp4`);
 
 // 1. Get all video files
 try {

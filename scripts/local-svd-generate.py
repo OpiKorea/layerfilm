@@ -12,6 +12,7 @@ parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--frames", type=int, default=21, help="Number of frames (21=3s)")
 parser.add_argument("--motion", type=int, default=32, help="Motion Bucket ID (1-255)")
 parser.add_argument("--noise", type=float, default=0.2, help="Noise Aug Strength (0-1)")
+parser.add_argument("--skip-master", action="store_true", help="Skip 60fps/4k mastering (Output raw 7fps only)")
 
 args = parser.parse_args()
 
@@ -25,6 +26,11 @@ model_path = "Z:/layerfilm/models/SVD/svd_xt.safetensors"
 
 print(f"[INFO] Initializing SVD-XT... (Device: CUDA)")
 
+# Silence all underlying noise
+os.environ["DIFFUSERS_VERBOSITY"] = "error"
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 # Load Pipeline
 try:
     pipe = StableVideoDiffusionPipeline.from_single_file(
@@ -32,10 +38,8 @@ try:
         torch_dtype=torch.float16,
         variant="fp16"
     )
-except AttributeError:
-    print("[WARN] 'from_single_file' not found on Pipeline. Trying legacy load...")
-    from diffusers.loaders import FromSingleFileMixin
-    print("[INFO] Downloading/Loading from Hub to Z: cache...")
+except Exception:
+    print("[INFO] Falling back to pretrained load...")
     pipe = StableVideoDiffusionPipeline.from_pretrained(
         "stabilityai/stable-video-diffusion-img2vid-xt",
         torch_dtype=torch.float16,
@@ -43,7 +47,8 @@ except AttributeError:
         cache_dir="Z:/layerfilm/models/cache"
     )
 
-pipe.enable_model_cpu_offload()
+pipe.to("cuda") # Force to CUDA for stability if memory allows
+# pipe.enable_model_cpu_offload() # Keeping this as fallback if needed, but pipe.to("cuda") is faster
 
 print(f"[INFO] Loading and Resizing image: {args.image}")
 image = load_image(args.image)
@@ -75,31 +80,65 @@ temp_output = args.output.replace(".mp4", "_raw.mp4")
 print(f"[INFO] Saving raw 7fps video to: {temp_output}")
 export_to_video(frames, temp_output, fps=7)
 
+if args.skip_master:
+    print(f"[INFO] Skip Master Flag Active. Renaming raw output to target.")
+    if os.path.exists(temp_output):
+        if os.path.exists(args.output):
+            os.remove(args.output)
+        os.rename(temp_output, args.output)
+    exit(0)
+
 # 3. MANDATORY 60FPS INTERPOLATION + TEMPORAL SMOOTHING + 4K
-print(f"[INFO] MANDATORY STEP: Mastering (60FPS + Shimmer Killer + 4K)...")
+print(f"[INFO] MANDATORY STEP: Mastering (Split Protocol for Stability)...")
 ffmpeg_path = "C:\\layerfilm\\.venv\\Lib\\site-packages\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe"
-
-# Added 'hqdn3d' (Temporal Denoiser) and 'atadenoise' to stabilize pixel shimmer
-# and 'minterpolate' with improved settings for smoothness
-filter_str = (
-    "hqdn3d=2:2:3:3," + # Temporal noise reduction
-    "atadenoise=0.04:0.04:0.04," + # Adaptive temporal averager
-    "minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1," +
-    "scale=3840:2160:flags=lanczos"
-)
-
 import subprocess
-cmd = [
-    ffmpeg_path, "-i", temp_output,
-    "-vf", filter_str,
-    "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p",
-    "-y", args.output
-]
+import time
 
 try:
-    subprocess.run(cmd, check=True)
+    # --- PASS 1: INTERPOLATION (CPU Intensive) ---
+    # We keep resolution low (1024x576) for the heavy interpolation
+    print(f"[INFO] PASS 1/2: Interpolating to 60FPS...")
+    interp_output = args.output.replace(".mp4", "_60fps_raw.mp4")
+    
+    # Using 'mci' (Motion Compensation) but strictly at source resolution
+    filter_interp = "minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1"
+    
+    cmd_1 = [
+        ffmpeg_path, "-i", temp_output,
+        "-vf", filter_interp,
+        "-c:v", "libx264", "-preset", "fast", "-crf", "18", 
+        "-y", interp_output
+    ]
+    subprocess.run(cmd_1, check=True)
+    
+    # --- COOLDOWN ---
+    print(f"[INFO] Cooldown Protocol (3s)...")
+    time.sleep(3)
+
+    # --- PASS 2: MASTERING (GPU/RAM Intensive) ---
+    # Upscale to 4K + Denoise the now-smooth 60fps video
+    print(f"[INFO] PASS 2/2: Upscaling to 4K + Denoising...")
+    
+    filter_master = (
+        "hqdn3d=2:2:3:3," + 
+        "atadenoise=0.04:0.04:0.04," +
+        "scale=3840:2160:flags=lanczos"
+    )
+    
+    cmd_2 = [
+        ffmpeg_path, "-i", interp_output,
+        "-vf", filter_master,
+        "-c:v", "libx264", "-preset", "fast", "-crf", "16", "-pix_fmt", "yuv420p",
+        "-y", args.output
+    ]
+    subprocess.run(cmd_2, check=True)
+
     print(f"[SUCCESS] ULTRA-STABLE 60FPS 4K MASTER READY: {args.output}")
-    if os.path.exists(temp_output):
-        os.remove(temp_output)
+    
+    # Cleanup
+    # DISABLE cleanup of temp_output because generate-recursive-chain.ps1 NEEDS it for concatenation!
+    # if os.path.exists(temp_output): os.remove(temp_output)
+    if os.path.exists(interp_output): os.remove(interp_output)
+
 except Exception as e:
     print(f"[ERROR] FFMPEG Mastering Failed: {e}")

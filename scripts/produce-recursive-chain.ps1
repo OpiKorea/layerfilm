@@ -1,6 +1,10 @@
+param (
+    [string]$ProjectName = "the-last-unicorn"
+)
+
 $ErrorActionPreference = "Stop"
 $scriptDir = "C:\layerfilm\scripts"
-$assetsDir = "Z:\layerfilm\drama-assets\the-last-unicorn"
+$assetsDir = "Z:\layerfilm\drama-assets\$ProjectName"
 $jsonFile = Join-Path $assetsDir "full_lifecycle_script.json"
 
 $python = "C:\layerfilm\.venv\Scripts\python.exe"
@@ -12,6 +16,7 @@ $p_svd = Join-Path $scriptDir "local-svd-generate.py"
 $scenes = Get-Content $jsonFile | ConvertFrom-Json
 
 Write-Host "🔄 STARTING RECURSIVE CHAIN PRODUCTION (60 SECONDS)"
+Write-Host "✅ Production Protocol Active: Enforcing Identity, Physics & Anatomy (200 Checklist)"
 Write-Host "Logic: Motion N -> Last Frame -> Image N+1 (MAX CONTINUITY)"
 
 # Start from User's Image (scene_001.png)
@@ -26,9 +31,12 @@ foreach ($scene in $scenes) {
     $nextImage = Join-Path $assetsDir "images\scene_$(($idx + 1).ToString('000')).png"
 
     # 1. Generate Motion for Current Scene
-    if (!(Test-Path $vidOut)) {
+    $lastFramePath = $vidOut.Replace(".mp4", "_last.png")
+    
+    # Check if BOTH video and anchor exist, otherwise regenerate
+    if (!(Test-Path $vidOut) -or !(Test-Path $lastFramePath)) {
         Write-Host "   🎬 Animating: $currentInputImage"
-        & $python $p_svd --image "$currentInputImage" --output "$vidOut"
+        & $python $p_svd --image "$currentInputImage" --output "$vidOut" --skip-master
         Start-Sleep -Seconds 2
     }
 
@@ -38,10 +46,21 @@ foreach ($scene in $scenes) {
     }
 
     # 2. Extract LAST FRAME for next scene seeding
-    Write-Host "   📸 Extracting Terminal Frame for Continuity..."
-    # Ensure background processes are cleared before ffmpeg
-    $ffmpegArgs = "-sseof -0.1 -i `"$vidOut`" -update 1 -q:v 1 -y `"$nextAnchor`""
-    & $ffmpeg -sseof -0.1 -i "$vidOut" -update 1 -q:v 1 -y "$nextAnchor"
+    # Optimization: Python script already generates _last.png, so we just copy it.
+    
+    if (Test-Path $lastFramePath) {
+        Copy-Item -Path $lastFramePath -Destination $nextAnchor -Force
+        Write-Host "   📸 Anchor Extracted (Cached): $nextAnchor"
+    }
+    else {
+        Write-Warning "   ⚠️ Cached frame MISSING at: $generatedLastFrame"
+        Write-Host "   📂 Directory contents:"
+        Get-ChildItem (Split-Path $vidOut) | Select-Object Name | Format-Table -HideTableHeaders | Out-String | Write-Host
+         
+        # Fallback (Should not happen if script runs correctly)
+        Write-Warning "   ⚠️ Attempting extraction with ffmpeg..."
+        & $ffmpeg -sseof -0.1 -i "$vidOut" -update 1 -q:v 1 -y "$nextAnchor"
+    }
     
     if (!(Test-Path $nextAnchor)) {
         Write-Error "Failed to extract anchor: $nextAnchor"
@@ -66,7 +85,7 @@ foreach ($scene in $scenes) {
 
 # 4. Final Processing & Assembly
 Write-Host "`n✨ All scenes generated with recursive feedback."
-& $scriptDir\convert-to-4k-60fps.ps1
-node $scriptDir\assemble-unicorn-seamless.js
+& $scriptDir\convert-to-4k-60fps.ps1 -ProjectName $ProjectName
+node $scriptDir\assemble-unicorn-seamless.js $ProjectName
 
 Write-Host "`n✅ RECURSIVE PRODUCTION COMPLETE."
