@@ -26,13 +26,13 @@ def run_workflow(workflow_path, overrides=None):
         
     # Apply overrides (e.g., changing text prompts or seeds)
     if overrides:
-        for node_id, widget_data in overrides.items():
-            if node_id in prompt:
-                for widget_name, value in widget_data.items():
-                    # This depends on your workflow structure
-                    # ComfyUI API JSON usually has widgets as a list of values
-                    # We'll need a more sophisticated mapper for production
-                    pass
+        for node_id, widgets in overrides.items():
+            if str(node_id) in prompt:
+                target_node = prompt[str(node_id)]
+                if "inputs" in target_node:
+                    for widget_key, value in widgets.items():
+                        target_node["inputs"][widget_key] = value
+                        print(f"[API] Override: Node {node_id}, {widget_key} = {value}")
 
     ws = websocket.WebSocket()
     ws.connect(f"ws://{server_address}/ws?clientId={client_id}")
@@ -60,8 +60,17 @@ def run_workflow(workflow_path, overrides=None):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python comfy-api-bridge.py <workflow.json>")
+        print("Usage: python comfy-api-bridge.py <workflow.json> [positive_prompt] [negative_prompt] [node_id]")
         sys.exit(1)
         
     workflow = sys.argv[1]
-    run_workflow(workflow)
+    overrides = {}
+    
+    if len(sys.argv) >= 3:
+        # Simple override for standard workflows: Node 2 is usually positive CLIP
+        overrides["2"] = {"text": sys.argv[2]}
+    if len(sys.argv) >= 4:
+        # Node 3 is usually negative CLIP
+        overrides["3"] = {"text": sys.argv[3]}
+        
+    run_workflow(workflow, overrides if overrides else None)
