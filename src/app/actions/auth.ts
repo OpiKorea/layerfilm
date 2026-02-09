@@ -77,32 +77,32 @@ export async function signup(formData: FormData) {
         })
 
         if (error) {
-            console.error('Supabase Signup Error:', error.message);
-            return redirect(`/signup?error=${encodeURIComponent(error.message)}`)
+            console.error('Supabase Auth.signUp failed:', error.message, error.status);
+            return { error: error.message };
         }
 
         if (data.user && data.user.identities && data.user.identities.length === 0) {
             return { error: 'User already exists.' };
         }
 
-        console.log('Signup Successful. User ID:', data.user?.id);
-
-        // 3. Create Profile
+        // 3. Create/Update Profile (Trigger should also handle this, but we do it manually for extra reliability)
+        console.log('Upserting user profile:', { id: data.user!.id, nickname });
         const { error: profileError } = await supabase
             .from('profiles')
             .upsert({
                 id: data.user!.id,
                 username: nickname,
-                email: email.toLowerCase(),
                 role: 'user',
                 updated_at: new Date().toISOString()
             }, { onConflict: 'id' });
 
         if (profileError) {
-            console.error("Profile creation failed:", profileError);
+            console.error("Profile creation/upsert failed (non-critical):", profileError.message, profileError.details);
+            // We don't return error here because the user is still created in Auth
         }
 
         // 4. Send Welcome Email
+        console.log('Sending welcome email to:', email);
         try {
             await sendEmail({
                 to: email,
@@ -117,10 +117,13 @@ export async function signup(formData: FormData) {
                     </div>
                 `
             });
+            console.log('Welcome email sent successfully.');
         } catch (emailError) {
             console.error("Welcome email failed:", emailError);
+            // Don't fail the whole signup if just the email failed
         }
 
+        console.log('Signup process complete for:', email);
         revalidatePath('/', 'layout');
         return { success: true, email };
 
