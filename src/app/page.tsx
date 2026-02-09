@@ -28,8 +28,9 @@ export default async function Home() {
             <section className="relative w-full h-[80vh] group overflow-hidden border-b border-white/5">
                 {/* Background Video/Image */}
                 <div className="absolute inset-0 bg-black z-0">
-                    <HeroVideoLoop videoUrl="/drama-assets/noir-city-short/noir-city.mp4" thumbnailUrl="/drama-assets/noir-city-short/images/scene_01.png" />
+                    <HeroVideoLoop videoUrl="/drama-assets/showcase/scene_001_7s_master.mp4" thumbnailUrl="/drama-assets/showcase/base.png" />
                 </div>
+
 
                 {/* Metadata Layer */}
                 <div className="absolute bottom-[10%] left-0 w-full px-6 md:px-16 z-20 flex flex-col items-start gap-5 max-w-3xl">
