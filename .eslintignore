@@ -1,0 +1,8 @@
+node_modules
+.next
+.venv
+dist
+out
+public
+scripts
+supabase

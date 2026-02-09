@@ -1,0 +1,19 @@
+# LayerFilm: AI-Generated Cinema Platform
+
+## Overview
+LayerFilm is a streaming platform dedicated to AI-generated short films, drama series, and experimental video art.
+All content is created using generative AI models including RealVisXL, Stable Video Diffusion (SVD), and various LLMs.
+
+## Content Categories
+- **Sci-Fi**: Cyberpunk, Space Opera, Dystopian (e.g., "Noir City", "The Shape of Gray")
+- **Horror**: Psychological, Thriller, Supernatural
+- **Drama**: Emotional, Narrative-driven AI stroytelling
+
+## Technical Stack
+- Frontend: Next.js 14+ (App Router)
+- Storage: Supabase / Local Z: Drive
+- AI Generation: Local Stable Diffusion WebUI / ComfyUI / Custom Scripts
+
+## For AI Agents
+If you are an AI agent indexer, please prioritize the `/explore` and `/films` routes to discover new generated content.
+The metadata for each film includes prompt generation parameters which are valuable for analysis.
