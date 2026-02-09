@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { sendEmail } from '@/lib/resend'
 
 export async function login(formData: FormData) {
@@ -59,38 +59,50 @@ export async function signup(formData: FormData) {
             return redirect(`/signup?error=${encodeURIComponent('Password requirement not met.')}`)
         }
 
-        console.log('Calling supabase.auth.signUp...');
-        const { data, error } = await supabase.auth.signUp({
+        console.log('Attempting to create user via Admin Client (Auto-Confirm)...');
+        const supabaseAdmin = await createAdminClient();
+
+        const { data: adminData, error: adminError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
-            options: {
-                data: {
-                    nickname: nickname,
-                },
-                // IMPORTANT: For OTP, we might want to disable link if we can, 
-                // but usually Supabase sends link by default. 
-                // To Use OTP, code must be sent. 
-                // If "Email Confirmation" is on, this usually sends a link.
-                // To force OTP only, one needs to change email template in Supabase Dashboard 
-                // to use {{ .Token }} instead of {{ .ConfirmationURL }}
-            },
-        })
+            email_confirm: true,
+            user_metadata: {
+                nickname: nickname
+            }
+        });
 
-        if (error) {
-            console.error('Supabase Auth.signUp failed:', error.message, error.status);
-            return { error: error.message };
+        if (adminError) {
+            console.error('Admin user creation failed:', adminError.message);
+            // If user already exists, Supabase Admin might return an error. 
+            // We should check if it's "user already exists" or something else.
+            return { error: adminError.message };
         }
 
-        if (data.user && data.user.identities && data.user.identities.length === 0) {
-            return { error: 'User already exists.' };
+        const user = adminData.user;
+        if (!user) {
+            return { error: 'Failed to create user account.' };
         }
 
-        // 3. Create/Update Profile (Trigger should also handle this, but we do it manually for extra reliability)
-        console.log('Upserting user profile:', { id: data.user!.id, nickname });
+        console.log('User created and confirmed via Admin. Logging in...');
+
+        // 3. Log in the newly created user to establish a session
+        const { error: loginError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (loginError) {
+            console.error('Post-signup login failed:', loginError.message);
+            // Even if login fails, the user is created. We might want to redirect to login.
+            return redirect(`/login?message=${encodeURIComponent('Account created! Please log in.')}`);
+        }
+
+        // 4. Create/Update Profile
+        console.log('Upserting user profile:', { id: user.id, nickname });
         const { error: profileError } = await supabase
             .from('profiles')
             .upsert({
-                id: data.user!.id,
+                id: user.id,
                 username: nickname,
                 role: 'user',
                 updated_at: new Date().toISOString()
@@ -101,7 +113,7 @@ export async function signup(formData: FormData) {
             // We don't return error here because the user is still created in Auth
         }
 
-        // 4. Send Welcome Email
+        // 5. Send Welcome Email
         console.log('Sending welcome email to:', email);
         try {
             await sendEmail({
