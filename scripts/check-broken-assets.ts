@@ -1,5 +1,5 @@
 
-import { createClient } from './utils/supabase/server';
+import { createClient } from '../src/utils/supabase/server';
 
 async function checkIdeas() {
     const supabase = await createClient();
