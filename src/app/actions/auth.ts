@@ -87,8 +87,43 @@ export async function signup(formData: FormData) {
 
         console.log('Signup Successful. User ID:', data.user?.id);
 
-        // Return success state to client instead of redirecting
+        // 3. Create Profile
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+                id: data.user!.id,
+                username: nickname,
+                email: email.toLowerCase(),
+                role: 'user',
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'id' });
+
+        if (profileError) {
+            console.error("Profile creation failed:", profileError);
+        }
+
+        // 4. Send Welcome Email
+        try {
+            await sendEmail({
+                to: email,
+                subject: 'Welcome to LayerFilm!',
+                html: `
+                    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #111; color: #fff; border-radius: 10px; border: 1px solid #333;">
+                        <h1 style="color: #7c3aed;">Welcome to LayerFilm, ${nickname}!</h1>
+                        <p>Your account has been successfully created.</p>
+                        <p>Now you can explore exclusive film ideas and series.</p>
+                        <br />
+                        <a href="${process.env.NEXT_PUBLIC_SITE_URL}/login" style="display: inline-block; padding: 12px 24px; background-color: #7c3aed; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Login Now</a>
+                    </div>
+                `
+            });
+        } catch (emailError) {
+            console.error("Welcome email failed:", emailError);
+        }
+
+        revalidatePath('/', 'layout');
         return { success: true, email };
+
 
     } catch (e: unknown) {
         console.error('CRITICAL SIGNUP FAILURE:', e);

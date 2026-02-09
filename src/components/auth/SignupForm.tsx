@@ -1,7 +1,7 @@
 "use client";
 
-import { completeSignupWithOtp, sendSignupOtp } from '@/app/actions/auth';
-import { checkNickname } from '@/app/actions/user';
+import { signup } from '@/app/actions/auth';
+import { checkNickname, checkEmail } from '@/app/actions/user';
 import { useState, useEffect } from 'react';
 import { Logo } from "@/components/ui/Logo";
 import Link from 'next/link';
@@ -28,12 +28,14 @@ export function SignupForm({ message, error: propError }: { message?: string, er
     // Step 1: Signup Form States
     const [nickname, setNickname] = useState('');
     const [nicknameAvailable, setNicknameAvailable] = useState<boolean | null>(null);
+    const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [legalChecked, setLegalChecked] = useState(false);
 
     const nicknameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9]{4,12}$/;
     const nicknameValid = nicknameRegex.test(nickname);
+    const emailValid = email.includes('@') && email.includes('.');
 
     // Debounce nickname check
     useEffect(() => {
@@ -47,6 +49,19 @@ export function SignupForm({ message, error: propError }: { message?: string, er
         }, 500);
         return () => clearTimeout(timer);
     }, [nickname, nicknameValid]);
+
+    // Debounce email check
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (emailValid) {
+                const available = await checkEmail(email);
+                setEmailAvailable(available);
+            } else {
+                setEmailAvailable(null);
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [email, emailValid]);
 
     // Validation (Derived State)
     const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/;
@@ -64,44 +79,20 @@ export function SignupForm({ message, error: propError }: { message?: string, er
         !passwordError &&
         passwordMatch &&
         password.length > 0 &&
+        emailAvailable === true &&
         confirmPassword.length > 0 &&
         nicknameValid &&
         nicknameAvailable === true &&
-        legalChecked &&
-        otp.length === 6;
+        legalChecked;
 
     // Handlers
-    async function handleSendOtp() {
-        if (!email) {
-            setLocalError(language === 'ko' ? "이메일을 먼저 입력해주세요." : "Please enter your email first.");
-            return;
-        }
-        setIsPending(true);
-        setLocalError(null);
-        setSuccessMessage(null);
-
-        const result = await sendSignupOtp(email, nickname);
-
-        setIsPending(false);
-
-        if (result.error) {
-            setLocalError(result.error);
-        } else {
-            setOtpSent(true);
-            setSuccessMessage(language === 'ko' ? "인증 코드가 발송되었습니다! 이메일을 확인해주세요." : "Verification code sent! Please check your email.");
-        }
-    }
-
     async function handleSignupSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setIsPending(true);
         setLocalError(null);
 
         const formData = new FormData(e.currentTarget);
-        // Ensure OTP is included if not in form (it is in form input name='otp')
-        // formData.set('email', email); // Already in input
-
-        const result = await completeSignupWithOtp(formData);
+        const result = await signup(formData);
 
         setIsPending(false);
 
@@ -128,58 +119,35 @@ export function SignupForm({ message, error: propError }: { message?: string, er
             <form className="flex flex-col gap-4" onSubmit={handleSignupSubmit}>
                 {/* Email */}
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-500 font-medium uppercase tracking-wider" htmlFor="email">Email</label>
-                    <div className="flex gap-2">
-                        <input
-                            className="flex-1 bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-accent focus:outline-none transition-colors"
-                            id="email"
-                            name="email"
-                            type="email"
-                            required
-                            placeholder="you@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            readOnly={otpSent}
-                        />
-                        <button
-                            type="button"
-                            onClick={handleSendOtp}
-                            disabled={isPending || !email || otpSent || !nicknameValid || nicknameAvailable === false}
-                            className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 rounded-lg transition-colors border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                        >
-                            {otpSent ? <LocalizedText en="Sent" ko="발송됨" /> : <LocalizedText en="Send Code" ko="인증번호 발송" />}
-                        </button>
+                    <div className="flex justify-between">
+                        <label className="text-xs text-gray-500 font-medium uppercase tracking-wider" htmlFor="email">Email</label>
+                        {email.length > 5 && (
+                            <span className={`text-xs ${emailValid && emailAvailable === true ? 'text-green-500' : 'text-red-500'}`}>
+                                {!emailValid ? (
+                                    <LocalizedText en="Invalid Email" ko="이메일 형식 오류" />
+                                ) : (
+                                    emailAvailable === null ? (
+                                        <LocalizedText en="Checking..." ko="확인 중..." />
+                                    ) : emailAvailable ? (
+                                        <LocalizedText en="Available" ko="가입 가능" />
+                                    ) : (
+                                        <LocalizedText en="Existing User" ko="이미 가입된 이메일" />
+                                    )
+                                )}
+                            </span>
+                        )}
                     </div>
+                    <input
+                        className={`bg-black/50 border ${email.length > 0 && (!emailValid || emailAvailable === false) ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:border-accent focus:outline-none transition-colors`}
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
                 </div>
-
-                {/* Verification Code Input */}
-                {otpSent && (
-                    <div className="flex flex-col gap-1 p-4 bg-white/5 border border-white/10 rounded-xl mt-2 border-accent/30 shadow-[0_0_15px_rgba(124,58,237,0.1)]">
-                        <label className="text-xs text-accent font-semibold uppercase tracking-wider flex justify-between items-center" htmlFor="otp">
-                            <LocalizedText en="Verification Code" ko="인증 코드" />
-                            <span className="text-[10px] text-gray-500 font-normal normal-case"><LocalizedText en="6-digit code" ko="6자리 숫자" /></span>
-                        </label>
-                        <input
-                            className="bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-accent focus:outline-none transition-colors tracking-[0.5em] text-center font-mono text-xl"
-                            id="otp"
-                            name="otp"
-                            type="text"
-                            inputMode="numeric"
-                            maxLength={6}
-                            required
-                            autoFocus
-                            placeholder="000000"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
-                        />
-                        <p className="text-[10px] text-gray-400 mt-1">
-                            <LocalizedText
-                                en="Check your email for the 6-digit code. It may take a minute."
-                                ko="이메일로 전송된 6자리 코드를 입력하세요. 최대 1분이 걸릴 수 있습니다."
-                            />
-                        </p>
-                    </div>
-                )}
 
                 {/* Nickname */}
                 <div className="flex flex-col gap-1">
