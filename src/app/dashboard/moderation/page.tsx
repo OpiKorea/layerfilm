@@ -27,7 +27,7 @@ export default async function ModerationPage() {
     }
 
     // Fetch Pending & Reported Ideas
-    const pendingIdeas = await getIdeas(undefined, undefined, undefined, undefined, true);
+    const pendingIdeas = await getIdeas(undefined, undefined, undefined, undefined, undefined, undefined, true);
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-20 px-6 md:px-12 font-sans">
@@ -38,7 +38,7 @@ export default async function ModerationPage() {
                     </Link>
 
                     <div className="flex items-center gap-4 border-b border-white/5 pb-8">
-                        <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <div className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center shadow-lg shadow-accent/20">
                             <Shield className="w-6 h-6 text-white" />
                         </div>
                         <div>
