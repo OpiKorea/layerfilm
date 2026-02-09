@@ -11,7 +11,14 @@ def queue_prompt(prompt, client_id, server_address="127.0.0.1:8188"):
     p = {"prompt": prompt, "client_id": client_id}
     data = json.dumps(p).encode('utf-8')
     req = urllib.request.Request(f"http://{server_address}/prompt", data=data)
-    return json.loads(urllib.request.urlopen(req).read())
+    try:
+        with urllib.request.urlopen(req) as response:
+            return json.loads(response.read())
+    except urllib.error.HTTPError as e:
+        print(f"[API] HTTP Error {e.code}: {e.reason}")
+        error_body = e.read().decode('utf-8')
+        print(f"[API] Error Details: {error_body}")
+        raise
 
 def get_history(prompt_id, server_address="127.0.0.1:8188"):
     with urllib.request.urlopen(f"http://{server_address}/history/{prompt_id}") as response:
